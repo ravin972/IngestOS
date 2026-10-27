@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   X,
   FileSpreadsheet,
@@ -40,7 +40,7 @@ export default function ExportModal({
   quarantinedCount,
   onPurged,
 }: ExportModalProps) {
-  const [selectedFormat, setSelectedFormat] = useState<"csv" | "sql" | "jsonl" | "webhook">("csv");
+  const [selectedFormat, setSelectedFormat] = useState<"csv" | "sql" | "json" | "webhook">("csv");
   const [exportPreview, setExportPreview] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [hasCopied, setHasCopied] = useState(false);
@@ -51,9 +51,7 @@ export default function ExportModal({
   const [webhookStatus, setWebhookStatus] = useState<string | null>(null);
   const [purgeStatus, setPurgeStatus] = useState<string | null>(null);
 
-  if (!isOpen) return null;
-
-  const handleFetchPreview = async (format: "csv" | "sql") => {
+  const handleFetchPreview = async (format: "csv" | "sql" | "json") => {
     setIsLoading(true);
     try {
       const text = await exportCleanDataset(jobId, format);
@@ -63,9 +61,13 @@ export default function ExportModal({
         setExportPreview(
           `order_id,customer_phone,gst_number,order_date,amount\nb2c34d22-1f33-4b1c-cf22-58819ab9e202,9823456780,27AADCB2234P1Z3,2026-10-27,320.00\nd4e56f44-3a55-4d3e-ef44-70031cd1f404,9876543210,33AAAAA0000A1Z5,2026-10-25,2890.00\n# ... ${cleanRowCount} clean rows stream`
         );
-      } else {
+      } else if (format === "sql") {
         setExportPreview(
           `-- IngestOS Clean PostgreSQL Stream (Job: ${jobId})\nBEGIN;\nINSERT INTO public.clean_records (order_id, customer_phone, gst_number, order_date, amount)\nVALUES\n  ('b2c34d22-1f33-4b1c-cf22-58819ab9e202', '9823456780', '27AADCB2234P1Z3', '2026-10-27', 320.00),\n  ('d4e56f44-3a55-4d3e-ef44-70031cd1f404', '9876543210', '33AAAAA0000A1Z5', '2026-10-25', 2890.00);\nCOMMIT;`
+        );
+      } else {
+        setExportPreview(
+          `{"order_id":"b2c34d22-1f33-4b1c-cf22-58819ab9e202","customer_phone":"9823456780","gst_number":"27AADCB2234P1Z3","order_date":"2026-10-27","amount":320.00}\n{"order_id":"d4e56f44-3a55-4d3e-ef44-70031cd1f404","customer_phone":"9876543210","gst_number":"33AAAAA0000A1Z5","order_date":"2026-10-25","amount":2890.00}`
         );
       }
     } finally {
@@ -73,19 +75,27 @@ export default function ExportModal({
     }
   };
 
+  useEffect(() => {
+    if (isOpen && selectedFormat !== "webhook") {
+      handleFetchPreview(selectedFormat);
+    }
+  }, [isOpen]);
+
   const handleDownloadFile = async () => {
     try {
-      const text = await exportCleanDataset(
-        jobId,
-        selectedFormat === "sql" ? "sql" : "csv"
-      );
-      const blob = new Blob([text], {
-        type: selectedFormat === "sql" ? "text/plain" : "text/csv",
-      });
+      const ext = selectedFormat === "sql" ? "sql" : selectedFormat === "json" ? "jsonl" : "csv";
+      const mime =
+        selectedFormat === "sql"
+          ? "text/plain"
+          : selectedFormat === "json"
+          ? "application/x-ndjson"
+          : "text/csv";
+      const text = await exportCleanDataset(jobId, selectedFormat);
+      const blob = new Blob([text], { type: mime });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `ingestos_${jobId}_clean.${selectedFormat === "sql" ? "sql" : "csv"}`;
+      a.download = `ingestos_${jobId}_clean.${ext}`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -209,9 +219,12 @@ export default function ExportModal({
             </button>
 
             <button
-              onClick={() => setSelectedFormat("jsonl")}
+              onClick={() => {
+                setSelectedFormat("json");
+                handleFetchPreview("json");
+              }}
               className={`p-3 rounded-lg border text-left transition-all ${
-                selectedFormat === "jsonl"
+                selectedFormat === "json"
                   ? "bg-[#1F2937] border-indigo-500 ring-1 ring-indigo-500/50"
                   : "bg-[#0D1117] border-[#1F2937] hover:bg-[#191f2f]"
               }`}
@@ -240,11 +253,11 @@ export default function ExportModal({
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs font-mono">
                 <span className="text-slate-400">
-                  Data Stream Preview ({selectedFormat.toUpperCase()})
+                  Data Stream Preview ({selectedFormat === "json" ? "JSONL" : selectedFormat.toUpperCase()})
                 </span>
                 <div className="flex items-center space-x-2">
                   <button
-                    onClick={() => handleFetchPreview(selectedFormat === "sql" ? "sql" : "csv")}
+                    onClick={() => handleFetchPreview(selectedFormat as "csv" | "sql" | "json")}
                     className="flex items-center space-x-1 text-slate-400 hover:text-slate-200 text-[11px] p-1"
                   >
                     <RefreshCw className="h-3 w-3" />
@@ -393,7 +406,7 @@ export default function ExportModal({
                 className="flex items-center space-x-2 px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-colors shadow-lg shadow-indigo-600/20 disabled:opacity-50"
               >
                 <Download className="h-3.5 w-3.5" />
-                <span>Download Clean {selectedFormat.toUpperCase()} File</span>
+                <span>Download Clean {selectedFormat === "json" ? "JSONL" : selectedFormat.toUpperCase()} File</span>
               </button>
             )}
           </div>
