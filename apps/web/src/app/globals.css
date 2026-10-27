@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --canvas: #090D16;
+    --surface: #111827;
+    --border: #1F2937;
+    --primary: #6366F1;
+    --emerald: #10B981;
+    --coral: #EF4444;
+  }
+
+  html,
+  body {
+    background-color: #090D16;
+    color: #F1F5F9;
+    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom developer terminal scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090D16;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1F2937;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}
+
+/* Focus and selection styles */
+::selection {
+  background-color: rgba(99, 102, 241, 0.35);
+  color: #FFFFFF;
+}
+
+/* Tabular numerals for high-speed data streams */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
