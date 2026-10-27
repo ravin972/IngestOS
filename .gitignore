@@ -1,0 +1,38 @@
+# Python & Pytest Cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+env/
+*.db
+*.sqlite3
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+
+# Environment Secrets
+.env
+.env.*
+!.env.example
+
+# Exclude Raw ECC Clone & Unused Language Rules
+.ecc-harness/
+rules/angular/
+rules/arkts/
+rules/cpp/
+rules/csharp/
+rules/dart/
+rules/fsharp/
+rules/golang/
+rules/java/
+rules/kotlin/
+rules/nuxt/
+rules/perl/
+rules/php/
+rules/react-native/
+rules/ruby/
+rules/swift/
+rules/vue/
