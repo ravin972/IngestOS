@@ -36,6 +36,13 @@ class ValidationResult:
     def quarantined_rows_count(self) -> int:
         return len(self.quarantine_records)
 
+    def to_jsonl(self) -> str:
+        """Export clean in-memory Polars DataFrame as newline-delimited JSON (JSONL)."""
+        if not self.valid_rows:
+            return ""
+        df = pl.DataFrame(self.valid_rows)
+        return df.write_ndjson()
+
 
 def validate_row_against_ast(
     row: Dict[str, Any],
@@ -437,3 +444,12 @@ def to_postgres_batch_sql(rows: List[Dict[str, Any]], table_name: str = "clean_r
             lines.append(f"INSERT INTO {table_name} ({cols_str}) VALUES ({vals_str});")
     lines.append("COMMIT;\n")
     return "\n".join(lines)
+
+
+def to_clean_jsonl(rows: List[Dict[str, Any]]) -> str:
+    """Format clean records as newline-delimited JSON (JSONL) using Polars write_ndjson."""
+    if not rows:
+        return ""
+    df = pl.DataFrame(rows)
+    return df.write_ndjson()
+

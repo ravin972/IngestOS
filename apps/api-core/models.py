@@ -193,8 +193,8 @@ class WebhookSink(Base):
     sink_id: Mapped[uuid.UUID] = mapped_column(
         sa.Uuid, primary_key=True, default=uuid.uuid4
     )
-    user_id: Mapped[uuid.UUID] = mapped_column(
-        sa.Uuid, sa.ForeignKey("users.user_id"), nullable=False
+    user_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        sa.Uuid, sa.ForeignKey("users.user_id"), nullable=True
     )
     target_url: Mapped[str] = mapped_column(
         sa.String(1024), nullable=False
@@ -213,6 +213,6 @@ class WebhookSink(Base):
     )
 
     # Relationships
-    user: Mapped["User"] = relationship(
+    user: Mapped[Optional["User"]] = relationship(
         "User", back_populates="webhook_sinks"
     )

@@ -88,7 +88,7 @@ class RemediateCellRequest(IngestOSBaseModel):
 
 # --- Webhook Sink Schemas ---
 class WebhookSinkCreate(IngestOSBaseModel):
-    user_id: uuid.UUID
+    user_id: Optional[uuid.UUID] = None
     target_url: str = Field(..., max_length=1024)
     retry_policy: str = Field(default="EXPONENTIAL_5X", max_length=50)
     dlq_enabled: bool = True
@@ -96,7 +96,7 @@ class WebhookSinkCreate(IngestOSBaseModel):
 
 class WebhookSinkResponse(IngestOSBaseModel):
     sink_id: uuid.UUID
-    user_id: uuid.UUID
+    user_id: Optional[uuid.UUID] = None
     target_url: str
     hmac_secret: str
     retry_policy: str

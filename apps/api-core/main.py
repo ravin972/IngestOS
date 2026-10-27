@@ -15,7 +15,7 @@ from typing import Any, Dict, List, Optional
 
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Response, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, PlainTextResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -63,6 +63,7 @@ from validator import (
     generate_sample_corpus,
     heuristic_repair_record,
     to_clean_csv,
+    to_clean_jsonl,
     to_postgres_batch_sql,
 )
 
@@ -623,13 +624,9 @@ def export_clean_data(
     if format_lower == "sql":
         sql_content = to_postgres_batch_sql(clean_rows, table_name="clean_records")
         return Response(content=sql_content, media_type="application/sql")
-    elif format_lower == "json":
-        return JSONResponse({
-            "job_id": str(job.job_id),
-            "status": job.status,
-            "valid_rows": job.valid_rows,
-            "rows": clean_rows,
-        })
+    elif format_lower in ("json", "jsonl", "ndjson"):
+        jsonl_content = to_clean_jsonl(clean_rows)
+        return PlainTextResponse(content=jsonl_content, media_type="application/x-ndjson")
     else:
         csv_content = to_clean_csv(clean_rows)
         return Response(content=csv_content, media_type="text/csv")
@@ -647,9 +644,16 @@ def create_webhook(
     db: Session = Depends(get_db),
 ) -> WebhookSinkResponse:
     """TC-WHK-01: Provision Webhook sink with cryptographic HMAC secret."""
+    user_id = req.user_id
+    if user_id is not None and (
+        str(user_id) == "00000000-0000-0000-0000-000000000000"
+        or user_id == uuid.UUID("00000000-0000-0000-0000-000000000000")
+    ):
+        user_id = None
+
     hmac_secret = generate_hmac_secret()
     sink = WebhookSink(
-        user_id=req.user_id,
+        user_id=user_id,
         target_url=req.target_url,
         hmac_secret=hmac_secret,
         retry_policy=req.retry_policy,

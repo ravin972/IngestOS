@@ -9,6 +9,7 @@ Test Cases:
 """
 
 import io
+import json
 from datetime import datetime, timedelta, timezone
 import pytest
 from fastapi.testclient import TestClient
@@ -186,6 +187,34 @@ def test_clean_export_formats_zero_leakage(client: TestClient):
     # ZERO LEAKAGE ASSERTION: Broken row must NEVER appear in SQL insert
     assert "BrokenRow" not in sql_text
     assert "INVALID_PHONE" not in sql_text
+
+    # 3. Export as Newline-Delimited JSON (JSONL) (TC-EXP-03)
+    json_export_res = client.get(f"/api/v1/jobs/{job_id}/export?format=json")
+    assert json_export_res.status_code == 200, json_export_res.text
+    json_lines = [json.loads(line) for line in json_export_res.text.strip().split("\n") if line]
+    assert len(json_lines) == 1
+    assert json_lines[0]["name"] == "Alice"
+    assert json_lines[0]["phone"] == "9811200001"
+    # ZERO LEAKAGE ASSERTION: Broken row must NEVER appear in JSONL
+    assert "BrokenRow" not in json_export_res.text
+    assert "INVALID_PHONE" not in json_export_res.text
+
+
+def test_webhook_dummy_sandbox_user_id(client: TestClient):
+    """TC-WHK-02: Ensure dummy sandbox user_id '00000000-0000-0000-0000-000000000000' converts to NULL without FK violation."""
+    sink_res = client.post(
+        "/api/v1/webhooks",
+        json={
+            "user_id": "00000000-0000-0000-0000-000000000000",
+            "target_url": "https://api.sandbox-demo.com/sink",
+            "retry_policy": "EXPONENTIAL_5X",
+            "dlq_enabled": True,
+        },
+    )
+    assert sink_res.status_code == 201, sink_res.text
+    sink_data = sink_res.json()
+    assert sink_data["user_id"] is None
+    assert sink_data["hmac_secret"].startswith("whsec_")
 
 
 def test_webhook_hmac_sha256_signature_dispatch(client: TestClient, db_session: Session):
