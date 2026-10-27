@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://ingestos_admin:ingestos_secure_password@localhost:5432/ingest_os_db",
+    "postgresql://ingestos_admin:ingestos_secure_password@localhost:5434/ingest_os_db",
 )
 
 # Detect if SQLite or PostgreSQL to pass correct arguments

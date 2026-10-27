@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: ingestos_admin
       POSTGRES_PASSWORD: ingestos_secure_password
     ports:
-      - "5432:5432"
+      - "5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
