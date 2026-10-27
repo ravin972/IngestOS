@@ -88,6 +88,7 @@ class RemediateCellRequest(IngestOSBaseModel):
 
 # --- Webhook Sink Schemas ---
 class WebhookSinkCreate(IngestOSBaseModel):
+    user_id: uuid.UUID
     target_url: str = Field(..., max_length=1024)
     retry_policy: str = Field(default="EXPONENTIAL_5X", max_length=50)
     dlq_enabled: bool = True
@@ -109,3 +110,35 @@ class HealthResponse(IngestOSBaseModel):
     engine: str = "FastAPI + Polars"
     runtime: str = "Nominal"
     timestamp: datetime
+
+
+# --- Phase 4 Advanced Pipeline Schemas ---
+class PresetResponse(IngestOSBaseModel):
+    name: str
+    version: str
+    description: str
+    rules_json: Dict[str, Any]
+
+
+class SandboxSimulateRequest(IngestOSBaseModel):
+    preset_name: str = "E-Commerce Orders"
+
+
+class AutoFixResponse(IngestOSBaseModel):
+    remediated_count: int
+    remaining_quarantined: int
+
+
+class DispatchWebhookRequest(IngestOSBaseModel):
+    sink_id: uuid.UUID
+
+
+class DispatchWebhookResponse(IngestOSBaseModel):
+    status: str
+    signature: str
+    payload_raw: str
+
+
+class PurgeJobResponse(IngestOSBaseModel):
+    status: str
+    purged_records_count: int

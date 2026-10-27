@@ -139,6 +139,12 @@ def sign_webhook_payload(payload: str | bytes, secret: str) -> str:
     return f"sha256={signature}"
 
 
+def verify_webhook_signature(payload: str | bytes, secret: str, signature: str) -> bool:
+    """Verify that an HMAC-SHA256 signature matches expected digest."""
+    expected = sign_webhook_payload(payload, secret)
+    return hmac.compare_digest(expected, signature)
+
+
 class SlidingWindowRateLimiter:
     """In-memory sliding window rate limiter for brute force protection.
 

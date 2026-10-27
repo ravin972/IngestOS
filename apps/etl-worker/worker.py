@@ -41,3 +41,23 @@ def validate_dataset_task(file_bytes_base64: str, rules_json: dict | None = None
         "quarantine_records": result.quarantine_records,
         "parse_time_ms": result.parse_time_ms,
     }
+
+
+@celery_app.task(name="tasks.purge_expired_jobs")
+def purge_expired_jobs_task() -> int:
+    """Periodic Celery beat task to purge all jobs past 60-min TTL."""
+    import sys
+    from pathlib import Path
+    api_core_path = Path(__file__).resolve().parent.parent / "api-core"
+    if str(api_core_path) not in sys.path:
+        sys.path.insert(0, str(api_core_path))
+
+    from database import SessionLocal
+    from main import purge_expired_quarantine_jobs
+
+    db = SessionLocal()
+    try:
+        purged = purge_expired_quarantine_jobs(db)
+        return purged
+    finally:
+        db.close()
