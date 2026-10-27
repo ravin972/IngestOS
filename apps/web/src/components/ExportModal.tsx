@@ -149,9 +149,17 @@ export default function ExportModal({
     setTimeout(() => setHasCopied(false), 2000);
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm font-sans">
-      <div className="bg-[#111827] border border-[#1F2937] rounded-xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm font-sans"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-[#111827] border border-[#1F2937] rounded-xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+      >
         {/* Header */}
         <div className="px-6 py-4 border-b border-[#1F2937] flex items-center justify-between bg-[#0D1117]">
           <div className="flex items-center space-x-3">
