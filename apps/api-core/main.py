@@ -79,10 +79,13 @@ def create_app() -> FastAPI:
         description="Deterministic High-Performance Ingestion Engine with Ephemeral DLQ",
     )
 
-    # CORS configuration
+    # Dynamic CORS configuration via ALLOWED_ORIGINS environment variable
+    raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
+    origins = [url.strip() for url in raw_origins.split(",") if url.strip()]
+
     application.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+        allow_origins=origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
