@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { fetchPresets, simulateSandbox, uploadDataset } from "@/lib/api";
 import { SchemaPreset, IngestionJob, QuarantineRecord } from "@/lib/types";
+import { toast } from "sonner";
 
 export default function SandboxPage() {
   const router = useRouter();
@@ -133,6 +134,18 @@ export default function SandboxPage() {
         ...prev,
         `polars-worker-01$ [ERROR] Simulation failed: ${err.message}`,
       ]);
+      if (
+        err instanceof TypeError ||
+        err?.message?.includes("fetch") ||
+        err?.message?.includes("Failed to fetch") ||
+        err?.message?.includes("NetworkError") ||
+        err?.name === "TypeError" ||
+        err?.code === "ECONNREFUSED"
+      ) {
+        toast.error("Network Error: Engine unreachable. Please start the backend.");
+      } else {
+        toast.error(err?.message || "Simulation failed.");
+      }
     } finally {
       setIsSimulating(false);
     }
@@ -183,6 +196,17 @@ export default function SandboxPage() {
         ...prev,
         `polars-worker-01$ [ERROR] Upload error: ${err.message}`,
       ]);
+      if (
+        err instanceof TypeError ||
+        err?.message?.includes("fetch") ||
+        err?.message?.includes("Failed to fetch") ||
+        err?.message?.includes("NetworkError") ||
+        err?.name === "TypeError"
+      ) {
+        toast.error("Network Error: Engine unreachable. Please start the backend.");
+      } else {
+        toast.error(err?.message || "Upload failed.");
+      }
     } finally {
       setIsUploading(false);
     }

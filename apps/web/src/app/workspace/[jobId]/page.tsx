@@ -550,7 +550,7 @@ export default function WorkspacePage() {
                   <span className="text-red-400 font-mono text-[10px]">SYNTAX_VIOLATION</span>
                 </div>
                 <div className="p-2.5 rounded bg-[#0D1117] border border-[#1F2937] font-mono text-xs text-red-300 select-all">
-                  "{String(selectedRecord.raw_payload[activeColumn] || "")}"
+                  &quot;{String(selectedRecord.raw_payload[activeColumn] || "")}&quot;
                 </div>
               </div>
 

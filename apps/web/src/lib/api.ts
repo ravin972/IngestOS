@@ -118,28 +118,16 @@ export async function fetchPresets(): Promise<SchemaPreset[]> {
 }
 
 export async function simulateSandbox(presetName: string = "E-Commerce Orders"): Promise<IngestionJob> {
-  try {
-    const res = await fetch(`${API_BASE}/api/v1/sandbox/simulate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ preset_name: presetName }),
-    });
-    if (res.ok) return await res.json();
-  } catch (err) {
-    // Return mock fallback job
+  const res = await fetch(`${API_BASE}/api/v1/sandbox/simulate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ preset_name: presetName }),
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({ detail: "Simulation request failed" }));
+    throw new Error(errData.detail || `Server error (${res.status})`);
   }
-
-  return {
-    job_id: "demo-sandbox-01",
-    filename: `sandbox_${presetName.toLowerCase().replace(/[\s/]+/g, "_")}.csv`,
-    total_rows: 5000,
-    valid_rows: 4842,
-    quarantined_rows: 158,
-    parse_time_ms: 1.2,
-    status: "COMPLETED",
-    expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
-    created_at: new Date().toISOString(),
-  };
+  return await res.json();
 }
 
 export async function uploadDataset(file: File, contractId?: string): Promise<IngestionJob> {

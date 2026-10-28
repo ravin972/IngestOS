@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   X,
   FileSpreadsheet,
@@ -51,35 +51,38 @@ export default function ExportModal({
   const [webhookStatus, setWebhookStatus] = useState<string | null>(null);
   const [purgeStatus, setPurgeStatus] = useState<string | null>(null);
 
-  const handleFetchPreview = async (format: "csv" | "sql" | "json") => {
-    setIsLoading(true);
-    try {
-      const text = await exportCleanDataset(jobId, format);
-      setExportPreview(text.slice(0, 1500));
-    } catch (err: any) {
-      if (format === "csv") {
-        setExportPreview(
-          `order_id,customer_phone,gst_number,order_date,amount\nb2c34d22-1f33-4b1c-cf22-58819ab9e202,9823456780,27AADCB2234P1Z3,2026-10-27,320.00\nd4e56f44-3a55-4d3e-ef44-70031cd1f404,9876543210,33AAAAA0000A1Z5,2026-10-25,2890.00\n# ... ${cleanRowCount} clean rows stream`
-        );
-      } else if (format === "sql") {
-        setExportPreview(
-          `-- IngestOS Clean PostgreSQL Stream (Job: ${jobId})\nBEGIN;\nINSERT INTO public.clean_records (order_id, customer_phone, gst_number, order_date, amount)\nVALUES\n  ('b2c34d22-1f33-4b1c-cf22-58819ab9e202', '9823456780', '27AADCB2234P1Z3', '2026-10-27', 320.00),\n  ('d4e56f44-3a55-4d3e-ef44-70031cd1f404', '9876543210', '33AAAAA0000A1Z5', '2026-10-25', 2890.00);\nCOMMIT;`
-        );
-      } else {
-        setExportPreview(
-          `{"order_id":"b2c34d22-1f33-4b1c-cf22-58819ab9e202","customer_phone":"9823456780","gst_number":"27AADCB2234P1Z3","order_date":"2026-10-27","amount":320.00}\n{"order_id":"d4e56f44-3a55-4d3e-ef44-70031cd1f404","customer_phone":"9876543210","gst_number":"33AAAAA0000A1Z5","order_date":"2026-10-25","amount":2890.00}`
-        );
+  const handleFetchPreview = useCallback(
+    async (format: "csv" | "sql" | "json") => {
+      setIsLoading(true);
+      try {
+        const text = await exportCleanDataset(jobId, format);
+        setExportPreview(text.slice(0, 1500));
+      } catch (err: any) {
+        if (format === "csv") {
+          setExportPreview(
+            `order_id,customer_phone,gst_number,order_date,amount\nb2c34d22-1f33-4b1c-cf22-58819ab9e202,9823456780,27AADCB2234P1Z3,2026-10-27,320.00\nd4e56f44-3a55-4d3e-ef44-70031cd1f404,9876543210,33AAAAA0000A1Z5,2026-10-25,2890.00\n# ... ${cleanRowCount} clean rows stream`
+          );
+        } else if (format === "sql") {
+          setExportPreview(
+            `-- IngestOS Clean PostgreSQL Stream (Job: ${jobId})\nBEGIN;\nINSERT INTO public.clean_records (order_id, customer_phone, gst_number, order_date, amount)\nVALUES\n  ('b2c34d22-1f33-4b1c-cf22-58819ab9e202', '9823456780', '27AADCB2234P1Z3', '2026-10-27', 320.00),\n  ('d4e56f44-3a55-4d3e-ef44-70031cd1f404', '9876543210', '33AAAAA0000A1Z5', '2026-10-25', 2890.00);\nCOMMIT;`
+          );
+        } else {
+          setExportPreview(
+            `{"order_id":"b2c34d22-1f33-4b1c-cf22-58819ab9e202","customer_phone":"9823456780","gst_number":"27AADCB2234P1Z3","order_date":"2026-10-27","amount":320.00}\n{"order_id":"d4e56f44-3a55-4d3e-ef44-70031cd1f404","customer_phone":"9876543210","gst_number":"33AAAAA0000A1Z5","order_date":"2026-10-25","amount":2890.00}`
+          );
+        }
+      } finally {
+        setIsLoading(false);
       }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [jobId, cleanRowCount]
+  );
 
   useEffect(() => {
     if (isOpen && selectedFormat !== "webhook") {
       handleFetchPreview(selectedFormat);
     }
-  }, [isOpen]);
+  }, [isOpen, selectedFormat, handleFetchPreview]);
 
   const handleDownloadFile = async () => {
     try {

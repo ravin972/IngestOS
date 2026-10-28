@@ -1,8 +1,10 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, Sparkles, Terminal, User, Github } from "lucide-react";
+import { Shield, Sparkles, User, Github } from "lucide-react";
+import { fetchHealth } from "@/lib/api";
 
 interface NavbarProps {
   stats?: {
@@ -16,6 +18,41 @@ interface NavbarProps {
 
 export function Navbar({ stats, filename }: NavbarProps) {
   const pathname = usePathname();
+  const [user, setUser] = useState<{ email?: string } | null>(null);
+  const [isEngineOnline, setIsEngineOnline] = useState<boolean>(true);
+
+  // Initial data fetch wrapped in defensive try/catch to guarantee zero crash
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadInitialSessionAndHealth() {
+      try {
+        const health = await fetchHealth();
+        if (isMounted) {
+          setIsEngineOnline(health?.status === "healthy");
+        }
+      } catch (err) {
+        // Defensive: If network error or backend down, do NOT throw or return null for component!
+        // Gracefully degrade by clearing user state to null and displaying default logged-out navbar
+        console.warn("FastAPI engine unreachable during Navbar initial fetch. Gracefully degrading:", err);
+        if (isMounted) {
+          setUser(null);
+          setIsEngineOnline(false);
+        }
+      }
+    }
+
+    loadInitialSessionAndHealth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Avoid duplicate header on full-screen Quarantine Studio workspace
+  if (pathname?.startsWith("/workspace")) {
+    return null;
+  }
 
   return (
     <header className="sticky top-0 z-50 h-14 bg-surface-low border-b border-border flex items-center justify-between px-4 select-none backdrop-blur-md">
@@ -30,6 +67,11 @@ export function Navbar({ stats, filename }: NavbarProps) {
             <span className="px-1.5 py-0.5 rounded bg-surface-high border border-border/80 font-mono text-[10px] text-brand-primary font-medium">
               v0.1 Sandbox
             </span>
+            {!isEngineOnline && (
+              <span className="px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 font-mono text-[10px] text-amber-400 font-medium">
+                Offline
+              </span>
+            )}
           </div>
         </Link>
 
@@ -113,13 +155,26 @@ export function Navbar({ stats, filename }: NavbarProps) {
           <span>Launch Sandbox</span>
         </Link>
 
-        <Link
-          href="/auth"
-          className="w-8 h-8 rounded-lg bg-surface border border-border hover:border-slate-600 flex items-center justify-center text-slate-300 hover:text-white transition-colors"
-          title="Account / Auth"
-        >
-          <User className="w-4 h-4" />
-        </Link>
+        {user ? (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-300 font-mono hidden sm:inline">{user.email}</span>
+            <Link
+              href="/auth"
+              className="w-8 h-8 rounded-lg bg-surface border border-border hover:border-slate-600 flex items-center justify-center text-slate-300 hover:text-white transition-colors"
+              title="Account"
+            >
+              <User className="w-4 h-4" />
+            </Link>
+          </div>
+        ) : (
+          <Link
+            href="/auth"
+            className="w-8 h-8 rounded-lg bg-surface border border-border hover:border-slate-600 flex items-center justify-center text-slate-300 hover:text-white transition-colors"
+            title="Sign In / Create Account"
+          >
+            <User className="w-4 h-4" />
+          </Link>
+        )}
       </div>
     </header>
   );

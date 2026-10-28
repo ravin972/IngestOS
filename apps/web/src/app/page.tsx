@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import {
   Shield,
@@ -32,8 +31,6 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-canvas flex flex-col justify-between selection:bg-brand-primary/30">
-      <Navbar />
-
       <main className="flex-1 flex flex-col items-center">
         {/* Hero Section */}
         <section className="w-full max-w-6xl mx-auto px-4 pt-16 pb-12 flex flex-col items-center text-center">
@@ -183,10 +180,10 @@ export default function LandingPage() {
                   VALUES (1001, &apos;9811200001&apos;, &apos;2026-10-27&apos;, 250.00);
                 </div>
                 <div className="pl-4 text-emerald-400">
-                  VALUES (1002, &apos;9811200001&apos;, &apos;2026-10-27&apos;, 410.50); <span className="text-[10px] text-slate-500">/* Auto-remediated */</span>
+                  VALUES (1002, &apos;9811200001&apos;, &apos;2026-10-27&apos;, 410.50); <span className="text-[10px] text-slate-500">{"/* Auto-remediated */"}</span>
                 </div>
                 <div className="pl-4 text-emerald-400">
-                  VALUES (1003, &apos;9811200003&apos;, &apos;2026-10-27&apos;, 1200.00); <span className="text-[10px] text-slate-500">/* Coerced ISO */</span>
+                  VALUES (1003, &apos;9811200003&apos;, &apos;2026-10-27&apos;, 1200.00); <span className="text-[10px] text-slate-500">{"/* Coerced ISO */"}</span>
                 </div>
                 <div className="pl-4 text-slate-200">
                   VALUES (1005, &apos;9811200005&apos;, &apos;2026-10-25&apos;, 95.00);

@@ -167,7 +167,7 @@ export default function PrivacyPage() {
                     GDPR Article 17
                   </td>
                   <td className="py-3 px-4 font-sans text-slate-400">
-                    Right to Erasure ("Right to be Forgotten")
+                    Right to Erasure (&ldquo;Right to be Forgotten&rdquo;)
                   </td>
                   <td className="py-3 px-4 text-emerald-400 font-sans">
                     Zero retention: clean data is never written to disk, eliminating erasure lag.
