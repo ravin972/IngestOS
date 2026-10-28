@@ -9,3 +9,4 @@ pydantic-settings
 argon2-cffi
 PyJWT
 python-multipart
+email-validator
