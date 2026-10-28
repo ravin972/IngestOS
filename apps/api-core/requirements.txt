@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+polars
+sqlalchemy
+psycopg2-binary
+redis
+pydantic
+pydantic-settings
