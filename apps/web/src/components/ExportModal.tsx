@@ -188,7 +188,7 @@ export default function ExportModal({
         <div className="px-6 py-2.5 bg-emerald-950/20 border-b border-emerald-900/40 flex items-center justify-between text-xs font-mono text-emerald-400">
           <div className="flex items-center space-x-2">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>100% AST Compliance Achieved • Zero Unvalidated Disk Leakage</span>
+            <span>100% Verified Clean • Zero Records Stored on Disk</span>
           </div>
           <span className="font-semibold">{cleanRowCount.toLocaleString()} Clean Rows</span>
         </div>
@@ -303,7 +303,7 @@ export default function ExportModal({
             <div className="space-y-4 bg-[#0D1117] border border-[#1F2937] rounded-lg p-4 font-mono text-xs">
               <div className="flex items-center justify-between border-b border-[#1F2937] pb-2">
                 <span className="text-slate-200 font-sans font-semibold text-xs">
-                  Webhook Sink Specification
+                  Webhook Delivery Configuration
                 </span>
                 <span className="px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800 text-[10px]">
                   X-IngestOS-Signature: Enabled
@@ -365,10 +365,10 @@ export default function ExportModal({
             <div className="space-y-0.5">
               <div className="flex items-center space-x-1.5 text-red-400 text-xs font-semibold">
                 <AlertOctagon className="h-4 w-4" />
-                <span>Zero-Retention RAM Invariant</span>
+                <span>Instant Session Erase</span>
               </div>
               <p className="text-[11px] text-slate-400">
-                Purges in-memory buffers immediately. Otherwise automatically erased in 60 minutes.
+                Erases this data session immediately. Otherwise automatically deleted after 60 minutes.
               </p>
             </div>
             <button
@@ -376,7 +376,7 @@ export default function ExportModal({
               className="flex items-center space-x-1.5 px-3 py-1.5 rounded bg-red-900/40 hover:bg-red-900/60 border border-red-700 text-red-200 text-xs font-semibold transition-colors"
             >
               <Trash2 className="h-3.5 w-3.5" />
-              <span>Purge Job Memory Now</span>
+              <span>Erase Session Now</span>
             </button>
           </div>
 
@@ -390,7 +390,7 @@ export default function ExportModal({
         {/* Footer Actions */}
         <div className="px-6 py-4 border-t border-[#1F2937] bg-[#0D1117] flex items-center justify-between">
           <div className="text-xs text-slate-400 font-mono">
-            <span>Isolated DLQ: </span>
+            <span>Filtered Rows: </span>
             <strong className="text-red-400">{quarantinedCount} quarantined</strong> (Excluded from export)
           </div>
 

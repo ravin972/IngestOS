@@ -134,7 +134,7 @@ export function Navbar({ stats, filename }: NavbarProps) {
             href="/privacy"
             className={`transition-colors hover:text-white ${pathname === "/privacy" ? "text-white" : ""}`}
           >
-            Zero-Retention DPA
+            Privacy & DPA
           </Link>
           <a
             href="https://github.com/ravin972/IngestOS"

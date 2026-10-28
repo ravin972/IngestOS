@@ -255,11 +255,11 @@ export default function SandboxPage() {
                 01
               </div>
               <h2 className="text-sm font-semibold tracking-wide uppercase text-slate-300">
-                Target Schema Contract Specification
+                Validation Rules & Schema Presets
               </h2>
             </div>
             <span className="text-xs text-slate-400">
-              Contract validation compiled into low-level Polars AST
+              Instant rule validation in memory without storing data to disk
             </span>
           </div>
 
@@ -300,10 +300,10 @@ export default function SandboxPage() {
             <div className="bg-[#0D1117] border border-[#1F2937] rounded-lg p-4 font-mono text-xs">
               <div className="flex items-center justify-between mb-3 border-b border-[#1F2937] pb-2">
                 <span className="text-slate-400 font-sans text-xs font-semibold uppercase tracking-wider">
-                  Active AST Specification: {activeContract.name}
+                  Active Validation Rules: {activeContract.name}
                 </span>
                 <span className="text-[11px] text-indigo-400">
-                  Compiled In-Memory AST
+                  Active In-Memory Rules
                 </span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -345,11 +345,11 @@ export default function SandboxPage() {
                 02
               </div>
               <h2 className="text-sm font-semibold tracking-wide uppercase text-slate-300">
-                Ingest Dataset & Ephemeral Triage
+                Ingest Dataset & Secure Data Review
               </h2>
             </div>
             <span className="text-xs text-slate-400">
-              CSV, JSON, or Snappy Parquet (Max 100MB)
+              CSV or JSON (Max 100MB)
             </span>
           </div>
 
@@ -373,7 +373,7 @@ export default function SandboxPage() {
                 Drag and drop your batch file, or browse
               </h3>
               <p className="text-xs text-slate-400 max-w-sm mb-4">
-                Valid rows pass directly to in-memory clean export stream. Malformed rows isolate to 60-minute ephemeral quarantine.
+                Valid rows pass directly to your clean export. Invalid rows are held in a temporary 60-minute quarantine for review.
               </p>
               <div className="flex items-center space-x-2 text-[11px] font-mono text-slate-400 bg-[#111827] px-3 py-1.5 rounded-md border border-[#1F2937]">
                 <span>Shortcut:</span>
@@ -452,10 +452,10 @@ export default function SandboxPage() {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h3 className="text-base font-semibold text-slate-200">
-                  Data Triage & Ephemeral Quarantine Inspector
+                  Secure Data Review & Quarantine Inspector
                 </h3>
                 <p className="text-xs text-slate-400 font-mono">
-                  Job ID: {job.job_id} • TTL: 60 Minutes • Status: {job.status}
+                  Job ID: {job.job_id} • Temporary Session Expires In: 60 Minutes • Status: {job.status}
                 </p>
               </div>
 

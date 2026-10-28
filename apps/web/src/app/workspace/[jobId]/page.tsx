@@ -222,7 +222,7 @@ export default function WorkspacePage() {
           <div className="px-2.5 py-1 rounded bg-[#111827] border border-[#1F2937] text-amber-300 flex items-center space-x-1">
             <Clock className="h-3 w-3" />
             <span>
-              TTL: {ttlMinutes}:{ttlSeconds < 10 ? `0${ttlSeconds}` : ttlSeconds}
+              Time Left: {ttlMinutes}:{ttlSeconds < 10 ? `0${ttlSeconds}` : ttlSeconds}
             </span>
           </div>
         </div>
@@ -280,7 +280,7 @@ export default function WorkspacePage() {
               </div>
               <div className="p-2.5 rounded bg-[#0D1117] border border-[#1F2937] space-y-1.5 font-mono text-[11px]">
                 <div className="text-slate-300 font-semibold truncate">E-Commerce Orders</div>
-                <div className="text-[10px] text-slate-400">AST Validation Rules:</div>
+                <div className="text-[10px] text-slate-400">Validation Rules:</div>
                 <div className="space-y-1 pl-1">
                   <div className="text-indigo-300 flex items-center justify-between">
                     <span>• phone</span>
@@ -547,7 +547,7 @@ export default function WorkspacePage() {
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between text-[11px] text-slate-400">
                   <span>Current Raw Value</span>
-                  <span className="text-red-400 font-mono text-[10px]">SYNTAX_VIOLATION</span>
+                  <span className="text-red-400 font-mono text-[10px]">INVALID_FORMAT</span>
                 </div>
                 <div className="p-2.5 rounded bg-[#0D1117] border border-[#1F2937] font-mono text-xs text-red-300 select-all">
                   &quot;{String(selectedRecord.raw_payload[activeColumn] || "")}&quot;
@@ -564,7 +564,7 @@ export default function WorkspacePage() {
                   {activeError?.reason || "Expected 10-digit clean numeric payload, encountered invalid format."}
                 </p>
                 <div className="p-2 rounded bg-[#070e1d] font-mono text-[10px] text-indigo-300 border border-[#1F2937]">
-                  <span>AST Regex Contract: </span>
+                  <span>Expected Format: </span>
                   <code>^[0-9]&#123;10&#125;$</code>
                 </div>
               </div>
@@ -572,7 +572,7 @@ export default function WorkspacePage() {
               {/* 1-Click Remediation Actions */}
               <div className="space-y-2">
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                  Smart Remediation
+                  Quick Fix Suggestions
                 </span>
                 <div className="space-y-1.5">
                   <button

@@ -17,9 +17,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "IngestOS — Developer Data Ingestion & Ephemeral Quarantine Engine",
+  title: "IngestOS — High-Speed Data Ingestion & Smart Quarantine Studio",
   description:
-    "Turn dirty CSV & JSON into clean PostgreSQL datasets in seconds. Zero-Retention RAM Architecture with deterministic Polars AST validation.",
+    "Instantly clean, auto-fix, and validate messy CSV & JSON into production-ready datasets. Zero server-side storage with instant privacy protection.",
 };
 
 export default function RootLayout({

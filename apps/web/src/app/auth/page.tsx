@@ -47,12 +47,12 @@ export default function AuthPage() {
     try {
       if (mode === "signup") {
         if (passedCriteriaCount < 4) {
-          setErrorMsg("Password does not meet enterprise entropy criteria (≥12 chars, 1 special, 1 uppercase, 1 digit).");
+          setErrorMsg("Password does not meet enterprise security criteria (≥12 chars, 1 special, 1 uppercase, 1 digit).");
           setIsLoading(false);
           return;
         }
         await signupUser(email, password);
-        setSuccessMsg("Account created with Argon2id hash! Redirecting to sandbox...");
+        setSuccessMsg("Account created securely! Redirecting to sandbox...");
         setTimeout(() => router.push("/sandbox"), 1200);
       } else {
         await loginUser(email, password);
@@ -81,7 +81,7 @@ export default function AuthPage() {
             </span>
           </Link>
           <p className="text-xs text-slate-400">
-            Enterprise Ingestion Gateway • Argon2id Key Derivation
+            Enterprise Ingestion Gateway • Enterprise-Grade Security
           </p>
         </div>
 
@@ -196,7 +196,7 @@ export default function AuthPage() {
             {mode === "signup" && (
               <div className="space-y-2 pt-1 font-mono text-[11px]">
                 <div className="flex items-center justify-between text-slate-400">
-                  <span>Entropy Security Score</span>
+                  <span>Password Strength</span>
                   <span
                     className={`font-semibold ${
                       entropyPercentage === 100
@@ -207,8 +207,8 @@ export default function AuthPage() {
                     }`}
                   >
                     {entropyPercentage === 100
-                      ? "Enterprise Ready (78.4 bits)"
-                      : `${entropyPercentage}% Nominal`}
+                      ? "Strong Enterprise Grade"
+                      : `${entropyPercentage}% Secure`}
                   </span>
                 </div>
 
@@ -277,9 +277,9 @@ export default function AuthPage() {
         <div className="p-4 rounded-lg bg-[#0D1117] border border-[#1F2937] flex items-center space-x-3 text-xs text-slate-400">
           <Shield className="h-5 w-5 text-indigo-400 shrink-0" />
           <div className="space-y-0.5">
-            <div className="font-semibold text-slate-300">Zero-Retention DPA Guaranteed</div>
+            <div className="font-semibold text-slate-300">Zero-Retention Security Guarantee</div>
             <p className="text-[11px] leading-relaxed">
-              Passwords salted & hashed via Argon2id. Clean ingestion streams never touch disk storage.
+              Zero-knowledge architecture. Processed data stays in memory and is never written to disk.
             </p>
           </div>
         </div>

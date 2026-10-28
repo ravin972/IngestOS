@@ -48,8 +48,8 @@ export default function LandingPage() {
           </h1>
 
           <p className="mt-6 text-base sm:text-lg text-slate-400 max-w-2xl leading-relaxed">
-            Deterministic AST validation with zero server-side disk retention. Isolate malformed rows
-            into an interactive 60-minute ephemeral quarantine DLQ and export verified transaction streams.
+            Instantly clean and validate messy data streams without storing sensitive records on our servers.
+            Isolate invalid rows in a temporary 60-minute quarantine workspace and export verified transaction streams.
           </p>
 
           {/* Action CTAs & Curl Snippet */}
@@ -95,7 +95,7 @@ export default function LandingPage() {
             <div className="p-4 rounded-xl bg-surface border border-border flex flex-col items-center">
               <span className="font-mono text-2xl font-bold text-indigo-300">99.4%</span>
               <span className="text-xs text-slate-400 mt-1 uppercase tracking-wider font-mono">
-                Auto-Coercion
+                Auto-Fix Rate
               </span>
             </div>
             <div className="p-4 rounded-xl bg-surface border border-border flex flex-col items-center">
@@ -111,10 +111,10 @@ export default function LandingPage() {
         <section className="w-full max-w-6xl mx-auto px-4 py-8">
           <div className="text-center mb-6">
             <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-              Deterministic AST Stream Partitioning
+              Instant Data Routing & Cleaning
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 mt-1">
-              Broken rows are trapped in ephemeral RAM quarantine. Clean rows flow straight to your database.
+              Broken rows are safely held in a temporary quarantine workspace. Clean rows flow straight to your database.
             </p>
           </div>
 
@@ -215,10 +215,10 @@ export default function LandingPage() {
               <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mb-4">
                 <RefreshCw className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-semibold text-white">Heuristic Auto-Fix Engine</h3>
+              <h3 className="text-base font-semibold text-white">Smart Data Auto-Fix</h3>
               <p className="mt-2 text-xs text-slate-400 leading-relaxed">
-                Automatically resolves common delimiter typos, strips phone formatting to 10 digits, and coerces
-                dates to ISO-8601 without altering financial truth.
+                Automatically resolves common delimiter typos, formats phone numbers to standard 10 digits, and coerces
+                dates to standard ISO format without altering financial accuracy.
               </p>
             </div>
 
