@@ -15,9 +15,9 @@ import {
   Github,
   KeyRound,
   Shield,
-  Layers,
 } from "lucide-react";
 import { loginUser, signupUser } from "@/lib/api";
+import { toast } from "sonner";
 
 export default function AuthPage() {
   const router = useRouter();
@@ -123,7 +123,11 @@ export default function AuthPage() {
           <div className="space-y-2">
             <button
               type="button"
-              onClick={() => alert("GitHub Enterprise SSO Mock: Redirecting to OAuth...")}
+              onClick={() =>
+                toast.info(
+                  "Enterprise Feature: OAuth & SSO configurations require a standard Enterprise DPA setup."
+                )
+              }
               className="w-full flex items-center justify-center space-x-2 py-2 px-4 rounded-lg bg-[#0D1117] hover:bg-[#191f2f] border border-[#1F2937] text-slate-200 text-xs font-semibold transition-colors"
             >
               <Github className="h-4 w-4" />
@@ -131,7 +135,11 @@ export default function AuthPage() {
             </button>
             <button
               type="button"
-              onClick={() => alert("Google Workspace SSO Mock: Redirecting to SAML...")}
+              onClick={() =>
+                toast.info(
+                  "Enterprise Feature: OAuth & SSO configurations require a standard Enterprise DPA setup."
+                )
+              }
               className="w-full flex items-center justify-center space-x-2 py-2 px-4 rounded-lg bg-[#0D1117] hover:bg-[#191f2f] border border-[#1F2937] text-slate-200 text-xs font-semibold transition-colors"
             >
               <KeyRound className="h-4 w-4 text-indigo-400" />
