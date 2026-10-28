@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -18,9 +18,11 @@ import {
 } from "lucide-react";
 import { loginUser, signupUser } from "@/lib/api";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 export default function AuthPage() {
   const router = useRouter();
+  const { user, setSession } = useAuth();
   const [mode, setMode] = useState<"signin" | "signup">("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,6 +30,13 @@ export default function AuthPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  // If already logged in, redirect straight to dashboard sandbox
+  useEffect(() => {
+    if (user) {
+      router.push("/sandbox");
+    }
+  }, [user, router]);
 
   // Password entropy metrics
   const hasMinLength = password.length >= 12;
@@ -52,21 +61,14 @@ export default function AuthPage() {
           return;
         }
         await signupUser(email, password);
-        if (typeof window !== "undefined") {
-          localStorage.setItem("ingestos_user", JSON.stringify({ email }));
-        }
+        setSession(email);
         setSuccessMsg("Account created securely! Redirecting to sandbox...");
-        setTimeout(() => router.push("/sandbox"), 1200);
+        setTimeout(() => router.push("/sandbox"), 800);
       } else {
         const loginRes = await loginUser(email, password);
-        if (typeof window !== "undefined") {
-          localStorage.setItem("ingestos_user", JSON.stringify({ email }));
-          if (loginRes?.access_token) {
-            localStorage.setItem("ingestos_token", loginRes.access_token);
-          }
-        }
+        setSession(email, loginRes?.access_token);
         setSuccessMsg("Authenticated! Redirecting to sandbox...");
-        setTimeout(() => router.push("/sandbox"), 1000);
+        setTimeout(() => router.push("/sandbox"), 800);
       }
     } catch (err: any) {
       setErrorMsg(err.message || "Authentication error");

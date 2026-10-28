@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Shield, Sparkles, User, Github, LogOut } from "lucide-react";
 import { fetchHealth } from "@/lib/api";
+import { useAuth } from "@/context/AuthContext";
 
 interface NavbarProps {
   stats?: {
@@ -18,32 +19,20 @@ interface NavbarProps {
 
 export function Navbar({ stats, filename }: NavbarProps) {
   const pathname = usePathname();
-  const router = useRouter();
-  const [user, setUser] = useState<{ email?: string } | null>(null);
+  const { user, logout } = useAuth();
   const [isEngineOnline, setIsEngineOnline] = useState<boolean>(true);
 
-  // Initial data fetch & session sync wrapped in defensive try/catch
+  // Initial engine health check wrapped in defensive try/catch
   useEffect(() => {
     let isMounted = true;
 
-    // Hydrate user session from localStorage
-    try {
-      const stored = typeof window !== "undefined" ? localStorage.getItem("ingestos_user") : null;
-      if (stored && isMounted) {
-        setUser(JSON.parse(stored));
-      }
-    } catch (e) {
-      if (isMounted) setUser(null);
-    }
-
-    async function loadInitialSessionAndHealth() {
+    async function checkHealth() {
       try {
         const health = await fetchHealth();
         if (isMounted) {
           setIsEngineOnline(health?.status === "healthy");
         }
       } catch (err) {
-        // Defensive: If network error or backend down, do NOT throw or return null for component!
         console.warn("FastAPI engine unreachable during Navbar initial fetch. Gracefully degrading:", err);
         if (isMounted) {
           setIsEngineOnline(false);
@@ -51,34 +40,12 @@ export function Navbar({ stats, filename }: NavbarProps) {
       }
     }
 
-    loadInitialSessionAndHealth();
-
-    const handleStorageChange = () => {
-      try {
-        const stored = localStorage.getItem("ingestos_user");
-        setUser(stored ? JSON.parse(stored) : null);
-      } catch (e) {
-        setUser(null);
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
+    checkHealth();
 
     return () => {
       isMounted = false;
-      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
-
-  const handleLogout = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("ingestos_user");
-      localStorage.removeItem("ingestos_token");
-      document.cookie = "refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    }
-    setUser(null);
-    router.push("/auth");
-  };
 
   // Avoid duplicate header on full-screen Quarantine Studio workspace
   if (pathname?.startsWith("/workspace")) {
@@ -198,7 +165,7 @@ export function Navbar({ stats, filename }: NavbarProps) {
             </Link>
             <button
               type="button"
-              onClick={handleLogout}
+              onClick={logout}
               className="flex items-center gap-1.5 h-8 px-2.5 rounded-lg bg-surface border border-border hover:border-red-500/40 hover:bg-red-950/20 text-slate-300 hover:text-red-300 text-xs transition-colors"
               title="Sign Out"
             >

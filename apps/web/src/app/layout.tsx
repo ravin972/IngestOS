@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { Navbar } from "@/components/Navbar";
+import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -30,9 +31,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark ${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="bg-canvas text-slate-100 min-h-screen antialiased flex flex-col font-sans">
-        <Navbar />
-        {children}
-        <Toaster richColors position="bottom-right" theme="dark" />
+        <AuthProvider>
+          <Navbar />
+          {children}
+          <Toaster richColors position="bottom-right" theme="dark" />
+        </AuthProvider>
       </body>
     </html>
   );
