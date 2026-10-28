@@ -52,10 +52,19 @@ export default function AuthPage() {
           return;
         }
         await signupUser(email, password);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("ingestos_user", JSON.stringify({ email }));
+        }
         setSuccessMsg("Account created securely! Redirecting to sandbox...");
         setTimeout(() => router.push("/sandbox"), 1200);
       } else {
-        await loginUser(email, password);
+        const loginRes = await loginUser(email, password);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("ingestos_user", JSON.stringify({ email }));
+          if (loginRes?.access_token) {
+            localStorage.setItem("ingestos_token", loginRes.access_token);
+          }
+        }
         setSuccessMsg("Authenticated! Redirecting to sandbox...");
         setTimeout(() => router.push("/sandbox"), 1000);
       }

@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Shield, Sparkles, User, Github } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Shield, Sparkles, User, Github, LogOut } from "lucide-react";
 import { fetchHealth } from "@/lib/api";
 
 interface NavbarProps {
@@ -18,12 +18,23 @@ interface NavbarProps {
 
 export function Navbar({ stats, filename }: NavbarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [user, setUser] = useState<{ email?: string } | null>(null);
   const [isEngineOnline, setIsEngineOnline] = useState<boolean>(true);
 
-  // Initial data fetch wrapped in defensive try/catch to guarantee zero crash
+  // Initial data fetch & session sync wrapped in defensive try/catch
   useEffect(() => {
     let isMounted = true;
+
+    // Hydrate user session from localStorage
+    try {
+      const stored = typeof window !== "undefined" ? localStorage.getItem("ingestos_user") : null;
+      if (stored && isMounted) {
+        setUser(JSON.parse(stored));
+      }
+    } catch (e) {
+      if (isMounted) setUser(null);
+    }
 
     async function loadInitialSessionAndHealth() {
       try {
@@ -33,10 +44,8 @@ export function Navbar({ stats, filename }: NavbarProps) {
         }
       } catch (err) {
         // Defensive: If network error or backend down, do NOT throw or return null for component!
-        // Gracefully degrade by clearing user state to null and displaying default logged-out navbar
         console.warn("FastAPI engine unreachable during Navbar initial fetch. Gracefully degrading:", err);
         if (isMounted) {
-          setUser(null);
           setIsEngineOnline(false);
         }
       }
@@ -44,10 +53,32 @@ export function Navbar({ stats, filename }: NavbarProps) {
 
     loadInitialSessionAndHealth();
 
+    const handleStorageChange = () => {
+      try {
+        const stored = localStorage.getItem("ingestos_user");
+        setUser(stored ? JSON.parse(stored) : null);
+      } catch (e) {
+        setUser(null);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
     return () => {
       isMounted = false;
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
+
+  const handleLogout = () => {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("ingestos_user");
+      localStorage.removeItem("ingestos_token");
+      document.cookie = "refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+    setUser(null);
+    router.push("/auth");
+  };
 
   // Avoid duplicate header on full-screen Quarantine Studio workspace
   if (pathname?.startsWith("/workspace")) {
@@ -159,12 +190,21 @@ export function Navbar({ stats, filename }: NavbarProps) {
           <div className="flex items-center gap-2">
             <span className="text-xs text-slate-300 font-mono hidden sm:inline">{user.email}</span>
             <Link
-              href="/auth"
-              className="w-8 h-8 rounded-lg bg-surface border border-border hover:border-slate-600 flex items-center justify-center text-slate-300 hover:text-white transition-colors"
-              title="Account"
+              href="/sandbox"
+              className="w-8 h-8 rounded-lg bg-surface border border-border hover:border-indigo-500/50 flex items-center justify-center text-slate-300 hover:text-white transition-colors group"
+              title="Dashboard (Sandbox)"
             >
-              <User className="w-4 h-4" />
+              <User className="w-4 h-4 text-indigo-400 group-hover:scale-105 transition-transform" />
             </Link>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 h-8 px-2.5 rounded-lg bg-surface border border-border hover:border-red-500/40 hover:bg-red-950/20 text-slate-300 hover:text-red-300 text-xs transition-colors"
+              title="Sign Out"
+            >
+              <LogOut className="w-3.5 h-3.5 text-slate-400 hover:text-red-400" />
+              <span className="hidden sm:inline">Sign Out</span>
+            </button>
           </div>
         ) : (
           <Link
