@@ -10,13 +10,15 @@
     --primary: #6366F1;
     --emerald: #10B981;
     --coral: #EF4444;
+    --font-inter: var(--font-sans);
+    --font-jetbrains-mono: var(--font-mono);
   }
 
   html,
   body {
     background-color: #090D16;
     color: #F1F5F9;
-    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+    font-family: var(--font-sans), var(--font-inter), system-ui, -apple-system, sans-serif;
     margin: 0;
     padding: 0;
     overflow-x: hidden;

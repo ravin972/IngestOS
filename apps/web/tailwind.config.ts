@@ -40,8 +40,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "Inter", "sans-serif"],
-        mono: ["var(--font-jetbrains-mono)", "JetBrains Mono", "monospace"],
+        sans: ["var(--font-sans)", "var(--font-inter)", "Inter", "sans-serif"],
+        mono: ["var(--font-mono)", "var(--font-jetbrains-mono)", "JetBrains Mono", "monospace"],
       },
       letterSpacing: {
         tightest: "-0.02em",

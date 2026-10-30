@@ -7,13 +7,13 @@ import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-sans",
   display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -29,8 +29,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`dark ${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="bg-canvas text-slate-100 min-h-screen antialiased flex flex-col font-sans">
+    <html
+      lang="en"
+      className={`dark ${inter.variable} ${jetbrainsMono.variable}`}
+    >
+      <body className="bg-canvas text-slate-100 min-h-screen antialiased flex flex-col font-sans selection:bg-indigo-500/30 selection:text-white">
         <AuthProvider>
           <Navbar />
           {children}
