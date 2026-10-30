@@ -63,12 +63,16 @@ export default function AuthPage() {
         await signupUser(email, password);
         setSession(email);
         setSuccessMsg("Account created securely! Redirecting to sandbox...");
-        setTimeout(() => router.push("/sandbox"), 800);
+        setTimeout(() => {
+          window.location.href = "/sandbox";
+        }, 400);
       } else {
         const loginRes = await loginUser(email, password);
         setSession(email, loginRes?.access_token);
         setSuccessMsg("Authenticated! Redirecting to sandbox...");
-        setTimeout(() => router.push("/sandbox"), 800);
+        setTimeout(() => {
+          window.location.href = "/sandbox";
+        }, 400);
       }
     } catch (err: any) {
       setErrorMsg(err.message || "Authentication error");

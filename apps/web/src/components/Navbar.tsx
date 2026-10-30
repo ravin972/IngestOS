@@ -53,16 +53,16 @@ export function Navbar({ stats, filename }: NavbarProps) {
   }
 
   return (
-    <header className="sticky top-0 z-50 h-14 bg-surface-low border-b border-border flex items-center justify-between px-4 select-none backdrop-blur-md">
+    <header className="sticky top-0 z-50 h-14 backdrop-blur-xl bg-[#090D16]/75 border-b border-white/[0.07] shadow-[inset_0_-1px_0_0_rgba(255,255,255,0.03)] flex items-center justify-between px-6 select-none transition-all">
       {/* Brand Identity & Breadcrumb */}
       <div className="flex items-center gap-3">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-lg bg-brand-primary/10 border border-brand-primary/30 flex items-center justify-center text-brand-primary shadow-sm group-hover:scale-105 transition-transform">
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shadow-sm group-hover:scale-105 group-hover:border-indigo-500/50 transition-all">
             <Shield className="w-4 h-4" />
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <span className="font-semibold text-sm tracking-tight text-white">IngestOS</span>
-            <span className="px-1.5 py-0.5 rounded bg-surface-high border border-border/80 font-mono text-[10px] text-brand-primary font-medium">
+            <span className="px-1.5 py-0.5 rounded bg-white/[0.05] border border-white/[0.08] font-mono text-[10px] text-indigo-300 font-medium">
               v0.1 Sandbox
             </span>
             {!isEngineOnline && (
@@ -75,7 +75,7 @@ export function Navbar({ stats, filename }: NavbarProps) {
 
         {filename && (
           <>
-            <div className="h-4 w-[1px] bg-border mx-1 hidden sm:block" />
+            <div className="h-4 w-[1px] bg-white/[0.08] mx-1 hidden sm:block" />
             <div className="hidden sm:flex items-center gap-1.5 font-mono text-xs text-slate-400">
               <span className="text-slate-500">Stream:</span>
               <span className="text-slate-200 font-medium">{filename}</span>
@@ -87,7 +87,7 @@ export function Navbar({ stats, filename }: NavbarProps) {
       {/* Central Telemetry Pills (When Active Run is displayed) */}
       {stats && (
         <div className="hidden xl:flex items-center gap-2 font-mono text-xs">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface border border-border text-slate-300">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-white/[0.03] border border-white/[0.07] text-slate-300">
             <span className="text-slate-500">Total:</span>
             <span className="font-semibold text-white">{(stats.total ?? 0).toLocaleString()}</span>
           </div>
@@ -105,7 +105,7 @@ export function Navbar({ stats, filename }: NavbarProps) {
             <span className="font-bold">{(stats.quarantined ?? 0).toLocaleString()}</span>
           </div>
           {stats.parseTimeMs !== undefined && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface border border-border text-slate-400">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-white/[0.03] border border-white/[0.07] text-slate-400">
               <span className="text-slate-500">Latency:</span>
               <span className="text-slate-200">{stats.parseTimeMs}ms</span>
             </div>
@@ -114,23 +114,29 @@ export function Navbar({ stats, filename }: NavbarProps) {
       )}
 
       {/* Navigation & Action Links */}
-      <div className="flex items-center gap-3">
-        <nav className="hidden md:flex items-center gap-4 text-xs font-medium text-slate-400">
+      <div className="flex items-center gap-4">
+        <nav className="hidden md:flex items-center gap-1 text-xs font-medium text-slate-400">
           <Link
             href="/"
-            className={`transition-colors hover:text-white ${pathname === "/" ? "text-white" : ""}`}
+            className={`px-3 py-1.5 rounded-md transition-all hover:text-white hover:bg-white/[0.04] ${
+              pathname === "/" ? "text-white bg-white/[0.05]" : ""
+            }`}
           >
             Overview
           </Link>
           <Link
             href="/sandbox"
-            className={`transition-colors hover:text-white ${pathname === "/sandbox" ? "text-white" : ""}`}
+            className={`px-3 py-1.5 rounded-md transition-all hover:text-white hover:bg-white/[0.04] ${
+              pathname === "/sandbox" ? "text-white bg-white/[0.05]" : ""
+            }`}
           >
             Sandbox
           </Link>
           <Link
             href="/privacy"
-            className={`transition-colors hover:text-white ${pathname === "/privacy" ? "text-white" : ""}`}
+            className={`px-3 py-1.5 rounded-md transition-all hover:text-white hover:bg-white/[0.04] ${
+              pathname === "/privacy" ? "text-white bg-white/[0.05]" : ""
+            }`}
           >
             Privacy & DPA
           </Link>
@@ -138,18 +144,19 @@ export function Navbar({ stats, filename }: NavbarProps) {
             href="https://github.com/ravin972/IngestOS"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all hover:text-white hover:bg-white/[0.04]"
           >
             <Github className="w-3.5 h-3.5" />
             <span>GitHub</span>
           </a>
         </nav>
 
+        {/* Primary Glowing CTA */}
         <Link
           href="/sandbox"
-          className="h-8 px-3 rounded-lg bg-brand-primary hover:bg-brand-hover text-white text-xs font-medium transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
+          className="relative group h-8 px-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-all flex items-center gap-1.5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_0_16px_rgba(99,102,241,0.35)] active:scale-95 border border-indigo-400/40"
         >
-          <Sparkles className="w-3.5 h-3.5" />
+          <Sparkles className="w-3.5 h-3.5 text-indigo-200" />
           <span>Launch Sandbox</span>
         </Link>
 
@@ -158,7 +165,7 @@ export function Navbar({ stats, filename }: NavbarProps) {
             <span className="text-xs text-slate-300 font-mono hidden sm:inline">{user.email}</span>
             <Link
               href="/sandbox"
-              className="w-8 h-8 rounded-lg bg-surface border border-border hover:border-indigo-500/50 flex items-center justify-center text-slate-300 hover:text-white transition-colors group"
+              className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] hover:border-indigo-500/50 flex items-center justify-center text-slate-300 hover:text-white transition-colors group"
               title="Dashboard (Sandbox)"
             >
               <User className="w-4 h-4 text-indigo-400 group-hover:scale-105 transition-transform" />
@@ -166,7 +173,7 @@ export function Navbar({ stats, filename }: NavbarProps) {
             <button
               type="button"
               onClick={logout}
-              className="flex items-center gap-1.5 h-8 px-2.5 rounded-lg bg-surface border border-border hover:border-red-500/40 hover:bg-red-950/20 text-slate-300 hover:text-red-300 text-xs transition-colors"
+              className="flex items-center gap-1.5 h-8 px-2.5 rounded-lg bg-white/[0.04] border border-white/[0.08] hover:border-red-500/40 hover:bg-red-950/20 text-slate-300 hover:text-red-300 text-xs transition-colors"
               title="Sign Out"
             >
               <LogOut className="w-3.5 h-3.5 text-slate-400 hover:text-red-400" />
@@ -176,7 +183,7 @@ export function Navbar({ stats, filename }: NavbarProps) {
         ) : (
           <Link
             href="/auth"
-            className="w-8 h-8 rounded-lg bg-surface border border-border hover:border-slate-600 flex items-center justify-center text-slate-300 hover:text-white transition-colors"
+            className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] hover:border-white/[0.2] flex items-center justify-center text-slate-300 hover:text-white transition-colors"
             title="Sign In / Create Account"
           >
             <User className="w-4 h-4" />

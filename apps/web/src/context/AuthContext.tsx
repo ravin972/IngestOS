@@ -45,19 +45,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     }
 
-    // Cross-tab synchronization
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === "ingestos_user") {
-        try {
-          setUser(e.newValue ? JSON.parse(e.newValue) : null);
-        } catch {
-          setUser(null);
+    // Cross-tab and local event synchronization
+    const handleAuthChange = () => {
+      try {
+        const stored = localStorage.getItem("ingestos_user");
+        if (stored) {
+          setUser(JSON.parse(stored));
+        } else {
+          const match = document.cookie.match(/(?:^|; )ingestos_user=([^;]*)/);
+          setUser(match ? { email: decodeURIComponent(match[1]) } : null);
         }
+      } catch {
+        setUser(null);
       }
     };
 
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
+    window.addEventListener("storage", handleAuthChange);
+    window.addEventListener("ingestos_auth_updated", handleAuthChange);
+    return () => {
+      window.removeEventListener("storage", handleAuthChange);
+      window.removeEventListener("ingestos_auth_updated", handleAuthChange);
+    };
   }, []);
 
   const setSession = (email: string, token?: string) => {
@@ -69,6 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem("ingestos_token", token);
       }
       document.cookie = `ingestos_user=${encodeURIComponent(email)}; path=/; max-age=604800; SameSite=Lax`;
+      window.dispatchEvent(new Event("ingestos_auth_updated"));
     } catch (e) {
       console.warn("Unable to persist session:", e);
     }
@@ -81,10 +90,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem("ingestos_token");
       document.cookie = "ingestos_user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       document.cookie = "refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      window.dispatchEvent(new Event("ingestos_auth_updated"));
     } catch (e) {
       console.warn("Unable to clear session:", e);
     }
-    router.push("/auth");
+    window.location.href = "/auth";
   };
 
   return (
