@@ -15,6 +15,7 @@ import {
   AlertOctagon,
   RefreshCw,
   Key,
+  Terminal,
 } from "lucide-react";
 import {
   exportCleanDataset,
@@ -157,60 +158,65 @@ export default function ExportModal({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm font-sans"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md font-sans animate-in fade-in duration-200"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-[#111827] border border-[#1F2937] rounded-xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+        className="surface-card border border-white/[0.1] rounded-2xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] bg-[#0c1220]/95"
       >
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-[#1F2937] flex items-center justify-between bg-[#0D1117]">
+        {/* Modal Header */}
+        <div className="px-6 py-4 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
           <div className="flex items-center space-x-3">
-            <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
-              <ShieldCheck className="h-4 w-4" />
+            <div className="h-9 w-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shadow-sm">
+              <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-slate-100">
+              <h2 className="text-base font-semibold text-slate-100 tracking-tight">
                 Export Clean Data & Webhook Sinks
               </h2>
-              <p className="text-xs text-slate-400 font-mono">Job ID: {jobId}</p>
+              <p className="text-xs text-slate-400 font-mono mt-0.5">Job ID: {jobId}</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-200 transition-colors p-1 rounded-md hover:bg-[#1F2937]"
+            className="text-slate-400 hover:text-white transition-all p-1.5 rounded-lg hover:bg-white/[0.06] border border-transparent hover:border-white/[0.08]"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Compliance Invariant Banner */}
-        <div className="px-6 py-2.5 bg-emerald-950/20 border-b border-emerald-900/40 flex items-center justify-between text-xs font-mono text-emerald-400">
-          <div className="flex items-center space-x-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>100% Verified Clean • Zero Records Stored on Disk</span>
+        <div className="px-6 py-2.5 bg-emerald-950/30 border-b border-emerald-500/20 flex items-center justify-between text-xs font-mono text-emerald-400 shadow-sm">
+          <div className="flex items-center space-x-2.5">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            </span>
+            <span className="font-medium">100% Verified Clean • Zero Records Stored on Disk</span>
           </div>
-          <span className="font-semibold">{cleanRowCount.toLocaleString()} Clean Rows</span>
+          <span className="font-semibold bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
+            {cleanRowCount.toLocaleString()} Clean Rows
+          </span>
         </div>
 
         {/* Content Body */}
         <div className="p-6 space-y-6 overflow-y-auto">
-          {/* Format Selector Cards */}
+          {/* Format Selector Tabs (Segmented Control with Active Specular Pill) */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <button
               onClick={() => {
                 setSelectedFormat("csv");
                 handleFetchPreview("csv");
               }}
-              className={`p-3 rounded-lg border text-left transition-all ${
+              className={`p-3.5 rounded-xl border text-left transition-all ${
                 selectedFormat === "csv"
-                  ? "bg-[#1F2937] border-indigo-500 ring-1 ring-indigo-500/50"
-                  : "bg-[#0D1117] border-[#1F2937] hover:bg-[#191f2f]"
+                  ? "surface-card border-indigo-500/80 bg-indigo-950/30 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2),0_0_20px_-5px_rgba(99,102,241,0.3)] ring-1 ring-indigo-500/40"
+                  : "surface-card-interactive border border-white/[0.08] hover:border-white/[0.15]"
               }`}
             >
               <FileSpreadsheet className="h-5 w-5 text-indigo-400 mb-2" />
-              <div className="font-semibold text-xs text-slate-200">Clean CSV</div>
-              <div className="text-[10px] text-slate-400 font-mono">RFC 4180 UTF-8</div>
+              <div className="font-semibold text-xs text-slate-100">Clean CSV</div>
+              <div className="text-[10px] text-slate-400 font-mono mt-0.5">RFC 4180 UTF-8</div>
             </button>
 
             <button
@@ -218,15 +224,15 @@ export default function ExportModal({
                 setSelectedFormat("sql");
                 handleFetchPreview("sql");
               }}
-              className={`p-3 rounded-lg border text-left transition-all ${
+              className={`p-3.5 rounded-xl border text-left transition-all ${
                 selectedFormat === "sql"
-                  ? "bg-[#1F2937] border-indigo-500 ring-1 ring-indigo-500/50"
-                  : "bg-[#0D1117] border-[#1F2937] hover:bg-[#191f2f]"
+                  ? "surface-card border-indigo-500/80 bg-indigo-950/30 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2),0_0_20px_-5px_rgba(99,102,241,0.3)] ring-1 ring-indigo-500/40"
+                  : "surface-card-interactive border border-white/[0.08] hover:border-white/[0.15]"
               }`}
             >
               <Database className="h-5 w-5 text-emerald-400 mb-2" />
-              <div className="font-semibold text-xs text-slate-200">PostgreSQL Batch</div>
-              <div className="text-[10px] text-slate-400 font-mono">BEGIN...COMMIT;</div>
+              <div className="font-semibold text-xs text-slate-100">PostgreSQL Batch</div>
+              <div className="text-[10px] text-slate-400 font-mono mt-0.5">BEGIN...COMMIT;</div>
             </button>
 
             <button
@@ -234,54 +240,63 @@ export default function ExportModal({
                 setSelectedFormat("json");
                 handleFetchPreview("json");
               }}
-              className={`p-3 rounded-lg border text-left transition-all ${
+              className={`p-3.5 rounded-xl border text-left transition-all ${
                 selectedFormat === "json"
-                  ? "bg-[#1F2937] border-indigo-500 ring-1 ring-indigo-500/50"
-                  : "bg-[#0D1117] border-[#1F2937] hover:bg-[#191f2f]"
+                  ? "surface-card border-indigo-500/80 bg-indigo-950/30 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2),0_0_20px_-5px_rgba(99,102,241,0.3)] ring-1 ring-indigo-500/40"
+                  : "surface-card-interactive border border-white/[0.08] hover:border-white/[0.15]"
               }`}
             >
               <Database className="h-5 w-5 text-amber-400 mb-2" />
-              <div className="font-semibold text-xs text-slate-200">JSON Stream</div>
-              <div className="text-[10px] text-slate-400 font-mono">Newline-delimited</div>
+              <div className="font-semibold text-xs text-slate-100">JSON Stream</div>
+              <div className="text-[10px] text-slate-400 font-mono mt-0.5">Newline-delimited</div>
             </button>
 
             <button
               onClick={() => setSelectedFormat("webhook")}
-              className={`p-3 rounded-lg border text-left transition-all ${
+              className={`p-3.5 rounded-xl border text-left transition-all ${
                 selectedFormat === "webhook"
-                  ? "bg-[#1F2937] border-indigo-500 ring-1 ring-indigo-500/50"
-                  : "bg-[#0D1117] border-[#1F2937] hover:bg-[#191f2f]"
+                  ? "surface-card border-indigo-500/80 bg-indigo-950/30 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2),0_0_20px_-5px_rgba(99,102,241,0.3)] ring-1 ring-indigo-500/40"
+                  : "surface-card-interactive border border-white/[0.08] hover:border-white/[0.15]"
               }`}
             >
               <Webhook className="h-5 w-5 text-cyan-400 mb-2" />
-              <div className="font-semibold text-xs text-slate-200">Custom Webhook</div>
-              <div className="text-[10px] text-slate-400 font-mono">HMAC-SHA256</div>
+              <div className="font-semibold text-xs text-slate-100">Custom Webhook</div>
+              <div className="text-[10px] text-slate-400 font-mono mt-0.5">HMAC-SHA256</div>
             </button>
           </div>
 
-          {/* Conditional View: CSV / SQL Preview */}
+          {/* Conditional View: CSV / SQL / JSONL Preview Window */}
           {selectedFormat !== "webhook" ? (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-slate-400">
-                  Data Stream Preview ({selectedFormat === "json" ? "JSONL" : selectedFormat.toUpperCase()})
-                </span>
+            <div className="space-y-2.5">
+              {/* Terminal Code Preview Header */}
+              <div className="surface-card rounded-t-xl px-4 py-2.5 border border-white/[0.08] bg-white/[0.02] flex items-center justify-between text-xs font-mono">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-rose-500/60 border border-rose-500/40" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-500/60 border border-amber-500/40" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/60 border border-emerald-500/40" />
+                  </div>
+                  <span className="text-slate-400 text-[11px]">
+                    Data Stream Preview ({selectedFormat === "json" ? "JSONL" : selectedFormat.toUpperCase()})
+                  </span>
+                </div>
+
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => handleFetchPreview(selectedFormat as "csv" | "sql" | "json")}
-                    className="flex items-center space-x-1 text-slate-400 hover:text-slate-200 text-[11px] p-1"
+                    className="flex items-center space-x-1 text-slate-400 hover:text-white text-[11px] px-2 py-1 rounded-md hover:bg-white/[0.05] transition-colors"
                   >
-                    <RefreshCw className="h-3 w-3" />
+                    <RefreshCw className={`h-3 w-3 ${isLoading ? "animate-spin" : ""}`} />
                     <span>Refresh</span>
                   </button>
                   <button
                     onClick={handleCopy}
-                    className="flex items-center space-x-1 px-2.5 py-1 rounded bg-[#1F2937] hover:bg-slate-700 text-slate-200 text-[11px] transition-colors"
+                    className="flex items-center space-x-1 px-2.5 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-slate-200 text-[11px] transition-all"
                   >
                     {hasCopied ? (
                       <>
                         <Check className="h-3 w-3 text-emerald-400" />
-                        <span className="text-emerald-400">Copied</span>
+                        <span className="text-emerald-400 font-medium">Copied!</span>
                       </>
                     ) : (
                       <>
@@ -293,43 +308,45 @@ export default function ExportModal({
                 </div>
               </div>
 
-              <div className="p-3 rounded-lg bg-[#070e1d] border border-[#1F2937] font-mono text-xs text-slate-300 max-h-48 overflow-y-auto whitespace-pre leading-relaxed">
-                {exportPreview ||
-                  `Click 'Fetch Preview' or select format above to inspect the sanitized output stream.`}
+              {/* Terminal Code Preview Body */}
+              <div className="p-4 rounded-b-xl bg-[#070b14]/95 border-x border-b border-white/[0.08] font-mono text-xs text-slate-300 max-h-56 overflow-y-auto whitespace-pre leading-relaxed shadow-inner">
+                {exportPreview || `Click 'Refresh' or select a format above to inspect the sanitized output stream.`}
               </div>
             </div>
           ) : (
             /* Webhook Sink Configuration View */
-            <div className="space-y-4 bg-[#0D1117] border border-[#1F2937] rounded-lg p-4 font-mono text-xs">
-              <div className="flex items-center justify-between border-b border-[#1F2937] pb-2">
+            <div className="surface-card rounded-xl border border-white/[0.08] p-5 font-mono text-xs space-y-4">
+              <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
                 <span className="text-slate-200 font-sans font-semibold text-xs">
                   Webhook Delivery Configuration
                 </span>
-                <span className="px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800 text-[10px]">
+                <span className="px-2 py-0.5 rounded-full bg-cyan-950/50 text-cyan-400 border border-cyan-800/60 text-[10px] font-mono">
                   X-IngestOS-Signature: Enabled
                 </span>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-slate-400 text-[11px] font-sans">Endpoint URL</label>
+              <div className="space-y-1.5 font-sans">
+                <label className="text-slate-300 text-xs font-medium">Endpoint URL</label>
                 <div className="flex space-x-2">
                   <input
                     type="url"
                     value={webhookUrl}
                     onChange={(e) => setWebhookUrl(e.target.value)}
-                    className="flex-1 bg-[#111827] border border-[#1F2937] rounded px-3 py-1.5 text-slate-200 font-mono text-xs focus:outline-none focus:border-indigo-500"
+                    placeholder="https://api.yourcompany.com/webhook"
+                    className="flex-1 bg-white/[0.03] border border-white/[0.12] rounded-lg px-3 py-2 text-slate-100 font-mono text-xs focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50 transition-all"
                   />
                   <button
                     onClick={handleDispatchWebhook}
-                    className="px-3 py-1.5 rounded bg-[#1F2937] hover:bg-slate-700 text-slate-200 text-xs font-sans font-medium"
+                    disabled={isLoading}
+                    className="px-3.5 py-2 rounded-lg bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-slate-200 text-xs font-sans font-medium transition-all"
                   >
                     Test Ping
                   </button>
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-slate-400 text-[11px] font-sans flex items-center space-x-1">
+              <div className="space-y-1.5 font-sans">
+                <label className="text-slate-300 text-xs font-medium flex items-center space-x-1.5">
                   <Key className="h-3 w-3 text-indigo-400" />
                   <span>HMAC-SHA256 Signing Secret</span>
                 </label>
@@ -337,23 +354,23 @@ export default function ExportModal({
                   type="text"
                   readOnly
                   value={hmacSecret}
-                  className="w-full bg-[#111827] border border-[#1F2937] rounded px-3 py-1.5 text-indigo-300 font-mono text-xs select-all"
+                  className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2 text-indigo-300 font-mono text-xs select-all"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4 text-[11px] text-slate-400 font-sans pt-2 border-t border-[#1F2937]">
-                <div>
-                  <span className="text-slate-400">Retry Policy: </span>
+              <div className="grid grid-cols-2 gap-4 text-xs text-slate-400 font-sans pt-3 border-t border-white/[0.06]">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-slate-500">Retry Policy:</span>
                   <span className="text-slate-200 font-mono font-semibold">Exponential 5x</span>
                 </div>
-                <div>
-                  <span className="text-slate-400">DLQ Partition: </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-slate-500">DLQ Partition:</span>
                   <span className="text-emerald-400 font-mono font-semibold">Ephemeral RAM</span>
                 </div>
               </div>
 
               {webhookStatus && (
-                <div className="p-2.5 rounded bg-indigo-950/40 border border-indigo-500/40 text-indigo-300 text-[11px]">
+                <div className="p-3 rounded-lg bg-indigo-950/50 border border-indigo-500/40 text-indigo-200 text-xs font-mono">
                   {webhookStatus}
                 </div>
               )}
@@ -361,19 +378,19 @@ export default function ExportModal({
           )}
 
           {/* Zero Retention Purge Section */}
-          <div className="p-4 rounded-lg bg-red-950/20 border border-red-900/30 flex items-center justify-between">
+          <div className="p-4 rounded-xl bg-rose-950/20 border border-rose-900/30 flex items-center justify-between">
             <div className="space-y-0.5">
-              <div className="flex items-center space-x-1.5 text-red-400 text-xs font-semibold">
+              <div className="flex items-center space-x-1.5 text-rose-400 text-xs font-semibold">
                 <AlertOctagon className="h-4 w-4" />
                 <span>Instant Session Erase</span>
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-slate-400 leading-relaxed font-sans">
                 Erases this data session immediately. Otherwise automatically deleted after 60 minutes.
               </p>
             </div>
             <button
               onClick={handlePurgeMemory}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded bg-red-900/40 hover:bg-red-900/60 border border-red-700 text-red-200 text-xs font-semibold transition-colors"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-rose-900/30 hover:bg-rose-900/50 border border-rose-700/50 text-rose-200 text-xs font-semibold transition-all shrink-0 ml-4"
             >
               <Trash2 className="h-3.5 w-3.5" />
               <span>Erase Session Now</span>
@@ -381,23 +398,23 @@ export default function ExportModal({
           </div>
 
           {purgeStatus && (
-            <div className="p-2 rounded bg-amber-950/40 border border-amber-800 text-amber-300 text-xs font-mono">
+            <div className="p-2.5 rounded-lg bg-amber-950/40 border border-amber-800/60 text-amber-300 text-xs font-mono">
               {purgeStatus}
             </div>
           )}
         </div>
 
-        {/* Footer Actions */}
-        <div className="px-6 py-4 border-t border-[#1F2937] bg-[#0D1117] flex items-center justify-between">
+        {/* Modal Footer Actions */}
+        <div className="px-6 py-4 border-t border-white/[0.08] bg-white/[0.02] flex items-center justify-between">
           <div className="text-xs text-slate-400 font-mono">
             <span>Filtered Rows: </span>
-            <strong className="text-red-400">{quarantinedCount} quarantined</strong> (Excluded from export)
+            <strong className="text-rose-400">{quarantinedCount} quarantined</strong> (Excluded from export)
           </div>
 
           <div className="flex items-center space-x-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-lg border border-[#1F2937] hover:bg-[#1F2937] text-slate-300 text-xs font-semibold transition-colors"
+              className="px-4 py-2 rounded-xl border border-white/[0.08] hover:bg-white/[0.04] text-slate-300 text-xs font-semibold transition-all"
             >
               Close
             </button>
@@ -405,7 +422,7 @@ export default function ExportModal({
               <button
                 onClick={handleDispatchWebhook}
                 disabled={isLoading}
-                className="flex items-center space-x-2 px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-colors shadow-lg shadow-indigo-600/20 disabled:opacity-50"
+                className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-all shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_0_16px_rgba(99,102,241,0.35)] active:scale-95 disabled:opacity-50 border border-indigo-400/40"
               >
                 <Send className="h-3.5 w-3.5" />
                 <span>Dispatch Webhook Stream</span>
@@ -414,7 +431,7 @@ export default function ExportModal({
               <button
                 onClick={handleDownloadFile}
                 disabled={isLoading}
-                className="flex items-center space-x-2 px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-colors shadow-lg shadow-indigo-600/20 disabled:opacity-50"
+                className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition-all shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_0_16px_rgba(99,102,241,0.35)] active:scale-95 disabled:opacity-50 border border-indigo-400/40"
               >
                 <Download className="h-3.5 w-3.5" />
                 <span>Download Clean {selectedFormat === "json" ? "JSONL" : selectedFormat.toUpperCase()} File</span>
