@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { fetchPresets, simulateSandbox, uploadDataset } from "@/lib/api";
 import { SchemaPreset, IngestionJob, QuarantineRecord } from "@/lib/types";
+import { SchemaStudioModal } from "@/components/SchemaStudioModal";
 import { toast } from "sonner";
 
 export default function SandboxPage() {
@@ -33,6 +34,7 @@ export default function SandboxPage() {
   const [isSimulating, setIsSimulating] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [isSchemaStudioOpen, setIsSchemaStudioOpen] = useState(false);
   const [terminalLogs, setTerminalLogs] = useState<string[]>([
     "polars-worker-01$ [00:00:00.002] IngestOS engine initialized in RAM",
     "polars-worker-01$ [00:00:00.012] Schema contract compiled (4 presets loaded)",
@@ -170,6 +172,23 @@ export default function SandboxPage() {
   }, [isSimulating, handleSimulate]);
 
   const activeContract = presets.find((p) => p.name === selectedPreset) || presets[0];
+
+  const handleApplyCustomContract = (contract: SchemaPreset) => {
+    setPresets((prev) => {
+      const existingIdx = prev.findIndex((p) => p.name === contract.name);
+      if (existingIdx >= 0) {
+        const next = [...prev];
+        next[existingIdx] = contract;
+        return next;
+      }
+      return [...prev, contract];
+    });
+    setSelectedPreset(contract.name);
+    setTerminalLogs((prev) => [
+      ...prev,
+      `polars-worker-01$ [00:00:00.048] Custom AST contract "${contract.name}" applied (${Object.keys(contract.rules_json?.columns || {}).length} rules in RAM)`,
+    ]);
+  };
 
   const processUploadFile = async (file: File) => {
     if (!file) return;
@@ -350,7 +369,7 @@ export default function SandboxPage() {
       <div className="max-w-7xl mx-auto px-6 pt-8 space-y-8">
         {/* Step 01: Schema Specification */}
         <section className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center space-x-3">
               <div className="h-6 w-6 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-mono text-xs font-bold border border-indigo-500/30 shadow-sm">
                 01
@@ -359,9 +378,19 @@ export default function SandboxPage() {
                 Validation Rules & Schema Presets
               </h2>
             </div>
-            <span className="text-xs text-slate-400">
-              Instant rule validation in memory without storing data to disk
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-slate-400 hidden lg:inline">
+                Instant rule validation in memory without storing data to disk
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsSchemaStudioOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600/15 hover:bg-indigo-600/25 border border-indigo-500/30 text-indigo-300 text-xs font-semibold transition-all hover:scale-[1.02] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] active:scale-95"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Interactive Schema Studio</span>
+              </button>
+            </div>
           </div>
 
           {/* 4 Preset Cards with Micro-Interactions */}
@@ -371,7 +400,12 @@ export default function SandboxPage() {
               return (
                 <button
                   key={preset.name}
-                  onClick={() => setSelectedPreset(preset.name)}
+                  onClick={() => {
+                    setSelectedPreset(preset.name);
+                    if (preset.name === "Custom AST") {
+                      setIsSchemaStudioOpen(true);
+                    }
+                  }}
                   className={`p-4 rounded-xl text-left transition-all ${
                     isSelected
                       ? "surface-card border-indigo-500/80 bg-indigo-950/25 bg-[radial-gradient(ellipse_at_top,_rgba(99,102,241,0.18),_transparent_75%)] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2),0_0_25px_-5px_rgba(99,102,241,0.3)] ring-1 ring-indigo-500/40"
@@ -394,9 +428,16 @@ export default function SandboxPage() {
                   <p className="text-xs text-slate-400 line-clamp-2 mb-3 leading-relaxed">
                     {preset.description}
                   </p>
-                  <div className="flex items-center space-x-2 text-[11px] font-mono text-slate-400">
-                    <Database className="h-3 w-3 text-indigo-400" />
-                    <span>{Object.keys(preset.rules_json?.columns || {}).length} Columns Active</span>
+                  <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
+                    <div className="flex items-center space-x-1.5">
+                      <Database className="h-3 w-3 text-indigo-400" />
+                      <span>{Object.keys(preset.rules_json?.columns || {}).length} Columns Active</span>
+                    </div>
+                    {preset.name === "Custom AST" && (
+                      <span className="text-[10px] text-indigo-400 hover:text-indigo-300 underline font-sans">
+                        Customize &rarr;
+                      </span>
+                    )}
                   </div>
                 </button>
               );
@@ -411,9 +452,19 @@ export default function SandboxPage() {
                   <FileCode className="w-3.5 h-3.5 text-indigo-400" />
                   <span>Active Validation Rules: {activeContract.name}</span>
                 </span>
-                <span className="text-[11px] text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-full font-mono">
-                  Active In-Memory Rules
-                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsSchemaStudioOpen(true)}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 font-mono text-[11px] transition-all"
+                  >
+                    <Sparkles className="w-3 h-3 text-indigo-400" />
+                    <span>Customize AST Rules</span>
+                  </button>
+                  <span className="text-[11px] text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded-full font-mono">
+                    Active In-Memory Rules
+                  </span>
+                </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {Object.entries(activeContract.rules_json?.columns || {}).map(([col, rule]) => (
@@ -716,6 +767,14 @@ export default function SandboxPage() {
           </section>
         )}
       </div>
+
+      {/* Interactive AST Schema Studio Modal */}
+      <SchemaStudioModal
+        isOpen={isSchemaStudioOpen}
+        onClose={() => setIsSchemaStudioOpen(false)}
+        onApplyContract={handleApplyCustomContract}
+        initialPreset={activeContract}
+      />
     </div>
   );
 }

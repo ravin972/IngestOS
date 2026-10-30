@@ -67,3 +67,34 @@ export interface HealthTelemetry {
   runtime: string;
   timestamp: string;
 }
+
+export interface InferredField {
+  field_name: string;
+  data_type: "string" | "integer" | "float" | "boolean" | "datetime";
+  nullable: boolean;
+  regex?: string;
+  min?: number;
+  max?: number;
+  sample_values?: string[];
+  description?: string;
+}
+
+export interface InferredSchemaResponse {
+  filename: string;
+  row_count: number;
+  fields: InferredField[];
+  rules_json: {
+    columns: Record<
+      string,
+      {
+        type: string;
+        required?: boolean;
+        regex?: string;
+        min?: number;
+        max?: number;
+        error_code?: string;
+        error_message?: string;
+      }
+    >;
+  };
+}

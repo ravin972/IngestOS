@@ -142,3 +142,23 @@ class DispatchWebhookResponse(IngestOSBaseModel):
 class PurgeJobResponse(IngestOSBaseModel):
     status: str
     purged_records_count: int
+
+
+# --- Auto-Inference Schema Models ---
+class InferredField(IngestOSBaseModel):
+    field_name: str
+    data_type: str
+    nullable: bool = True
+    regex: Optional[str] = None
+    min: Optional[float] = None
+    max: Optional[float] = None
+    sample_values: List[Any] = Field(default_factory=list)
+    description: Optional[str] = None
+
+
+class InferredSchemaResponse(IngestOSBaseModel):
+    filename: str
+    row_count: int
+    fields: List[InferredField]
+    rules_json: Dict[str, Any]
+

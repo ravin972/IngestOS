@@ -453,3 +453,151 @@ def to_clean_jsonl(rows: List[Dict[str, Any]]) -> str:
     df = pl.DataFrame(rows)
     return df.write_ndjson()
 
+
+def infer_schema_from_stream(raw_bytes: bytes, filename: str = "dataset.csv") -> Dict[str, Any]:
+    """Auto-discover data types and construct a valid AST contract using Polars in RAM.
+
+    Invariants:
+    - Never writes dataset to persistent disk (Zero-Retention RAM law).
+    - Detects column types (string, integer, float, boolean, datetime).
+    - Identifies nullability and computes suggested regex/constraints.
+    """
+    if not raw_bytes:
+        raise ValueError("Cannot infer schema from empty byte stream.")
+
+    fn_lower = filename.lower()
+    df: Optional[pl.DataFrame] = None
+
+    # Attempt JSON / NDJSON parsing
+    if fn_lower.endswith(".json") or fn_lower.endswith(".jsonl") or raw_bytes.strip().startswith(b"[") or raw_bytes.strip().startswith(b"{"):
+        try:
+            df = pl.read_json(io.BytesIO(raw_bytes))
+        except Exception:
+            try:
+                df = pl.read_ndjson(io.BytesIO(raw_bytes))
+            except Exception:
+                pass
+
+    # Attempt CSV parsing if not already parsed
+    if df is None:
+        try:
+            df = pl.read_csv(io.BytesIO(raw_bytes), n_rows=2000, ignore_errors=True, try_parse_dates=True)
+        except Exception:
+            # Fallback trying semicolon delimiter
+            try:
+                df = pl.read_csv(io.BytesIO(raw_bytes), separator=";", n_rows=2000, ignore_errors=True, try_parse_dates=True)
+            except Exception as e:
+                raise ValueError(f"Failed to parse file into Polars DataFrame: {str(e)}")
+
+    if df is None or len(df.columns) == 0:
+        raise ValueError("No columns could be detected in the provided file.")
+
+    total_rows = len(df)
+    fields: List[Dict[str, Any]] = []
+    columns_rule_spec: Dict[str, Any] = {}
+
+    for col in df.columns:
+        dtype = df.schema[col]
+        col_lower = col.lower()
+
+        # Map Polars dtype to IngestOS contract types
+        if dtype in (
+            pl.Int8, pl.Int16, pl.Int32, pl.Int64,
+            pl.UInt8, pl.UInt16, pl.UInt32, pl.UInt64
+        ):
+            inferred_type = "integer"
+        elif dtype in (pl.Float32, pl.Float64, pl.Decimal):
+            inferred_type = "float"
+        elif dtype == pl.Boolean:
+            inferred_type = "boolean"
+        elif dtype in (pl.Date, pl.Datetime, pl.Time):
+            inferred_type = "datetime"
+        else:
+            inferred_type = "string"
+
+        # Check nullability
+        null_count = int(df[col].null_count())
+        nullable = null_count > 0 or total_rows == 0
+
+        # Extract sample non-null values
+        non_null_series = df[col].drop_nulls()
+        sample_values = [v for v in non_null_series.head(4).to_list()]
+
+        suggested_regex: Optional[str] = None
+        suggested_min: Optional[float] = None
+        suggested_max: Optional[float] = None
+
+        # Phone heuristic: if column name implies phone, treat as string regex ^\d{10}$
+        if any(term in col_lower for term in ("phone", "mobile", "contact_no", "tel")):
+            inferred_type = "string"
+            suggested_regex = r"^\d{10}$"
+
+        # Email heuristic
+        elif any(term in col_lower for term in ("email", "mail")):
+            inferred_type = "string"
+            suggested_regex = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+
+        # Date heuristic
+        elif any(term in col_lower for term in ("date", "dob", "created_at", "timestamp")) or inferred_type == "datetime":
+            suggested_regex = r"^\d{4}-\d{2}-\d{2}$"
+            inferred_type = "datetime"
+
+        # GSTIN heuristic
+        elif any(term in col_lower for term in ("gst", "gstin")):
+            inferred_type = "string"
+            suggested_regex = r"^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
+
+        # UUID heuristic
+        elif any(term in col_lower for term in ("uuid", "guid")) or (
+            sample_values and all(isinstance(s, str) and len(str(s)) == 36 and str(s).count("-") == 4 for s in sample_values)
+        ):
+            inferred_type = "string"
+            suggested_regex = r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+
+        # Numeric constraints heuristic
+        if inferred_type in ("integer", "float") and len(non_null_series) > 0:
+            try:
+                min_val = float(non_null_series.min())
+                if min_val >= 0.0:
+                    suggested_min = 0.0
+            except Exception:
+                pass
+
+        field_def = {
+            "field_name": col,
+            "data_type": inferred_type,
+            "nullable": nullable,
+            "regex": suggested_regex,
+            "min": suggested_min,
+            "max": suggested_max,
+            "sample_values": [str(s) for s in sample_values],
+            "description": f"Inferred {inferred_type} from {total_rows} rows ({null_count} nulls).",
+        }
+        fields.append(field_def)
+
+        # Rule spec for compilation into AST contract
+        rule: Dict[str, Any] = {
+            "type": inferred_type,
+            "required": not nullable,
+        }
+        if suggested_regex:
+            rule["regex"] = suggested_regex
+            rule["error_code"] = f"ERR_{col.upper()}_FORMAT"
+            rule["error_message"] = f"Field '{col}' format violation."
+        if suggested_min is not None:
+            rule["min"] = suggested_min
+            rule["error_code"] = f"ERR_{col.upper()}_MIN"
+            rule["error_message"] = f"Field '{col}' must be at least {suggested_min}."
+        if suggested_max is not None:
+            rule["max"] = suggested_max
+
+        columns_rule_spec[col] = rule
+
+    return {
+        "filename": filename,
+        "row_count": total_rows,
+        "fields": fields,
+        "rules_json": {"columns": columns_rule_spec},
+    }
+
+

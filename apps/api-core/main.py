@@ -31,6 +31,8 @@ from schemas import (
     DispatchWebhookRequest,
     DispatchWebhookResponse,
     HealthResponse,
+    InferredField,
+    InferredSchemaResponse,
     IngestionJobResponse,
     PresetResponse,
     PurgeJobResponse,
@@ -62,6 +64,7 @@ from validator import (
     execute_validation_pipeline,
     generate_sample_corpus,
     heuristic_repair_record,
+    infer_schema_from_stream,
     to_clean_csv,
     to_clean_jsonl,
     to_postgres_batch_sql,
@@ -208,6 +211,41 @@ def get_schema_presets() -> List[PresetResponse]:
         )
         for preset in SANDBOX_PRESETS
     ]
+
+
+@app.post(
+    "/api/v1/schemas/infer",
+    response_model=InferredSchemaResponse,
+    tags=["Schemas"],
+)
+async def infer_schema_contract(
+    file: UploadFile = File(...),
+) -> InferredSchemaResponse:
+    """Infer AST schema contract and column types from an uploaded CSV or JSON file stream.
+
+    Zero-Retention: Never writes to persistent disk, operates strictly in ephemeral RAM.
+    """
+    filename = file.filename or "dataset.csv"
+    raw_bytes = await file.read()
+    if not raw_bytes:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot infer schema from empty file stream.",
+        )
+
+    try:
+        inferred = infer_schema_from_stream(raw_bytes, filename)
+        return InferredSchemaResponse(
+            filename=inferred["filename"],
+            row_count=inferred["row_count"],
+            fields=inferred["fields"],
+            rules_json=inferred["rules_json"],
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Schema inference failed: {str(e)}",
+        )
 
 
 @app.post(

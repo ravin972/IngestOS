@@ -1,6 +1,7 @@
 import {
   HealthTelemetry,
   IngestionJob,
+  InferredSchemaResponse,
   QuarantineRecord,
   SchemaPreset,
   WebhookSink,
@@ -345,3 +346,40 @@ export async function loginUser(email: string, password: string) {
   }
   return await res.json();
 }
+
+export async function inferSchemaFromFile(file: File): Promise<InferredSchemaResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch(`${API_BASE}/api/v1/schemas/infer`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({ detail: "Schema inference failed" }));
+    throw new Error(errData.detail || "Schema inference failed");
+  }
+
+  return await res.json();
+}
+
+export async function createSchemaContract(
+  name: string,
+  rules_json: Record<string, any>,
+  version: string = "v1.0"
+): Promise<{ contract_id: string; name: string; version: string; rules_json: any }> {
+  const res = await fetch(`${API_BASE}/api/v1/schemas`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, version, rules_json }),
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({ detail: "Failed to create schema contract" }));
+    throw new Error(errData.detail || "Contract registration failed");
+  }
+
+  return await res.json();
+}
+
