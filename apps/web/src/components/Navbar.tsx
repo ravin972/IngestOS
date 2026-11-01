@@ -19,7 +19,7 @@ interface NavbarProps {
 
 export function Navbar({ stats, filename }: NavbarProps) {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { user, logout, isLoading: authLoading } = useAuth();
   const [isEngineOnline, setIsEngineOnline] = useState<boolean>(true);
 
   // Initial engine health check wrapped in defensive try/catch
@@ -160,7 +160,9 @@ export function Navbar({ stats, filename }: NavbarProps) {
           <span>Launch Sandbox</span>
         </Link>
 
-        {user ? (
+        {authLoading ? (
+          <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] animate-pulse" />
+        ) : user ? (
           <div className="flex items-center gap-2">
             <span className="text-xs text-slate-300 font-mono hidden sm:inline">{user.email}</span>
             <Link
