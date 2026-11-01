@@ -33,6 +33,7 @@ import {
 } from "@/lib/api";
 import { IngestionJob, QuarantineRecord } from "@/lib/types";
 import ExportModal from "@/components/ExportModal";
+import { IngestLogo } from "@/components/IngestLogo";
 
 export default function WorkspacePage() {
   const params = useParams();
@@ -215,6 +216,10 @@ export default function WorkspacePage() {
       <header className="h-14 backdrop-blur-xl bg-[#090D16]/85 border-b border-white/[0.08] shadow-[inset_0_-1px_0_0_rgba(255,255,255,0.03)] px-5 flex items-center justify-between sticky top-0 z-40">
         {/* Breadcrumb & Stream Identity */}
         <div className="flex items-center space-x-3">
+          <Link href="/" title="IngestOS Home" className="group flex items-center">
+            <IngestLogo size="sm" iconOnly />
+          </Link>
+          <div className="h-4 w-[1px] bg-white/[0.08]" />
           <Link
             href="/sandbox"
             className="flex items-center gap-1.5 text-slate-400 hover:text-white text-xs transition-all px-2.5 py-1.5 rounded-lg hover:bg-white/[0.05] border border-transparent hover:border-white/[0.06]"

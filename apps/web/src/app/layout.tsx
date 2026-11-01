@@ -18,9 +18,47 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "IngestOS — High-Speed Data Ingestion & Smart Quarantine Studio",
+  metadataBase: new URL("https://ingest-os.vercel.app"),
+  title: {
+    default: "IngestOS - Zero-Retention Data Ingestion & Quarantine Platform",
+    template: "%s | IngestOS",
+  },
   description:
-    "Instantly clean, auto-fix, and validate messy CSV & JSON into production-ready datasets. Zero server-side storage with instant privacy protection.",
+    "Turn dirty CSV & JSON streams into clean, validated PostgreSQL data in seconds. Vectorized Polars Rust AST engine with human-in-the-loop quarantine triage and strict zero-retention memory compliance.",
+  keywords: [
+    "data ingestion",
+    "quarantine studio",
+    "ETL triage",
+    "Polars Rust",
+    "zero retention",
+    "GDPR Article 17",
+    "India DPDP",
+    "PostgreSQL stream",
+    "HMAC-SHA256 webhooks",
+  ],
+  authors: [{ name: "IngestOS Core Team" }],
+  creator: "IngestOS",
+  publisher: "IngestOS",
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://ingest-os.vercel.app",
+    siteName: "IngestOS",
+    title: "IngestOS — Zero-Retention Data Ingestion & Quarantine Platform",
+    description:
+      "Turn dirty CSV & JSON streams into clean, validated PostgreSQL data in seconds. Vectorized Polars Rust AST engine with human-in-the-loop quarantine triage and strict zero-retention memory compliance.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "IngestOS — Zero-Retention Data Ingestion & Quarantine Platform",
+    description:
+      "Turn dirty CSV & JSON streams into clean, validated PostgreSQL data in seconds. Vectorized Polars Rust AST engine with human-in-the-loop quarantine triage and strict zero-retention memory compliance.",
+    creator: "@ingestos",
+  },
 };
 
 export default function RootLayout({

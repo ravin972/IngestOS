@@ -3,9 +3,10 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, Sparkles, User, Github, LogOut } from "lucide-react";
+import { Sparkles, User, Github, LogOut } from "lucide-react";
 import { fetchHealth } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { IngestLogo } from "@/components/IngestLogo";
 
 interface NavbarProps {
   stats?: {
@@ -56,12 +57,9 @@ export function Navbar({ stats, filename }: NavbarProps) {
     <header className="sticky top-0 z-50 h-14 backdrop-blur-xl bg-[#090D16]/75 border-b border-white/[0.07] shadow-[inset_0_-1px_0_0_rgba(255,255,255,0.03)] flex items-center justify-between px-6 select-none transition-all">
       {/* Brand Identity & Breadcrumb */}
       <div className="flex items-center gap-3">
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shadow-sm group-hover:scale-105 group-hover:border-indigo-500/50 transition-all">
-            <Shield className="w-4 h-4" />
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-sm tracking-tight text-white">IngestOS</span>
+        <Link href="/" className="flex items-center gap-2 group">
+          <IngestLogo size="sm" showWordmark />
+          <div className="flex items-center gap-1.5 ml-1">
             <span className="px-1.5 py-0.5 rounded bg-white/[0.05] border border-white/[0.08] font-mono text-[10px] text-indigo-300 font-medium">
               v0.1 Sandbox
             </span>

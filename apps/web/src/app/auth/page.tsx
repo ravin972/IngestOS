@@ -19,6 +19,7 @@ import {
 import { loginUser, signupUser } from "@/lib/api";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
+import { IngestLogo } from "@/components/IngestLogo";
 
 export default function AuthPage() {
   const router = useRouter();
@@ -90,14 +91,9 @@ export default function AuthPage() {
       {/* Centered Auth Container */}
       <div className="w-full max-w-md space-y-6 relative z-10">
         {/* Brand Header */}
-        <div className="text-center space-y-2">
-          <Link href="/" className="inline-flex items-center space-x-2.5 group">
-            <div className="h-10 w-10 rounded-xl bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2),0_0_20px_rgba(99,102,241,0.25)] group-hover:scale-105 group-hover:border-indigo-400/60 transition-all">
-              <ShieldCheck className="h-5 w-5 text-indigo-400" />
-            </div>
-            <span className="font-bold text-xl tracking-tight text-white font-mono">
-              IngestOS
-            </span>
+        <div className="text-center space-y-3 flex flex-col items-center">
+          <Link href="/" className="inline-flex items-center group">
+            <IngestLogo size="lg" showWordmark />
           </Link>
           <p className="text-xs text-slate-400">
             Enterprise Ingestion Gateway • Enterprise-Grade Security

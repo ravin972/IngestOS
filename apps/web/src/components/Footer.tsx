@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import { ShieldCheck, Cpu, HardDrive, Shield } from "lucide-react";
+import { ShieldCheck, Cpu, HardDrive } from "lucide-react";
+import { IngestLogo } from "@/components/IngestLogo";
 
 export function Footer() {
   return (
@@ -8,11 +9,8 @@ export function Footer() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono text-slate-400">
         {/* Left Telemetry Cluster */}
         <div className="flex items-center gap-4 flex-wrap justify-center md:justify-start">
-          <Link href="/" className="flex items-center gap-2 text-slate-300 font-sans font-semibold tracking-tight hover:text-white transition-colors">
-            <div className="w-5 h-5 rounded bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-              <Shield className="w-3 h-3" />
-            </div>
-            <span>IngestOS</span>
+          <Link href="/" className="group flex items-center hover:opacity-90 transition-opacity">
+            <IngestLogo size="sm" showWordmark />
           </Link>
           <span className="text-white/[0.1] hidden sm:inline">|</span>
           <span className="flex items-center gap-1.5 text-slate-400">
