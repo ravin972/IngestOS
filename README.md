@@ -5,6 +5,7 @@
 [![Live Production](https://img.shields.io/badge/Production-ingest--os.vercel.app-6366F1?style=flat-square&logo=vercel)](https://ingest-os.vercel.app)
 [![Engine](https://img.shields.io/badge/Engine-FastAPI%20%2B%20Polars%20Rust%20AST-6366F1?style=flat-square&logo=fastapi)](https://pola.rs/)
 [![Storage](https://img.shields.io/badge/Storage-Zero--Disk%20RAM%20Law-10B981?style=flat-square)](#the-zero-retention-ram-law)
+[![CI Quality Gate](https://github.com/ravin972/IngestOS/actions/workflows/ci.yml/badge.svg)](https://github.com/ravin972/IngestOS/actions/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/Pytest-20%2F20%20Passing-10B981?style=flat-square&logo=pytest)](https://github.com/ravin972/IngestOS)
 [![Next.js](https://img.shields.io/badge/Next.js-14%20App%20Router-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
