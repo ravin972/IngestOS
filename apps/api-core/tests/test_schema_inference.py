@@ -81,3 +81,4 @@ def test_infer_empty_file_returns_400(client: TestClient):
     files = {"file": ("empty.csv", io.BytesIO(b""), "text/csv")}
     response = client.post("/api/v1/schemas/infer", files=files)
     assert response.status_code == 400
+

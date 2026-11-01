@@ -519,3 +519,4 @@ export function SchemaStudioModal({
     </div>
   );
 }
+

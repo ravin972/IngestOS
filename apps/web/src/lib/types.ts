@@ -98,3 +98,23 @@ export interface InferredSchemaResponse {
     >;
   };
 }
+
+export interface WebhookTestRequest {
+  job_id?: string;
+  target_url: string;
+  secret: string;
+  sample_rows?: Array<Record<string, any>>;
+}
+
+export interface WebhookTestResponse {
+  status_code: number;
+  latency_ms: number;
+  signature_header: string;
+  timestamp: number;
+  delivery_id: string;
+  verified: boolean;
+  request_headers: Record<string, string>;
+  payload_preview: Record<string, any>;
+  response_body: Record<string, any>;
+}
+

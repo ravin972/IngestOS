@@ -162,3 +162,24 @@ class InferredSchemaResponse(IngestOSBaseModel):
     fields: List[InferredField]
     rules_json: Dict[str, Any]
 
+
+# --- Webhook Tester & Cryptographic Verification Schemas ---
+class WebhookTestRequest(IngestOSBaseModel):
+    job_id: Optional[str] = None
+    target_url: str = Field(default="https://sink.ingestos.dev/v1/loopback-echo", max_length=2048)
+    secret: str = Field(..., max_length=256)
+    sample_rows: Optional[List[Dict[str, Any]]] = None
+
+
+class WebhookTestResponse(IngestOSBaseModel):
+    status_code: int
+    latency_ms: float
+    signature_header: str
+    timestamp: int
+    delivery_id: str
+    verified: bool
+    request_headers: Dict[str, str]
+    payload_preview: Dict[str, Any]
+    response_body: Dict[str, Any]
+
+

@@ -5,6 +5,8 @@ import {
   QuarantineRecord,
   SchemaPreset,
   WebhookSink,
+  WebhookTestRequest,
+  WebhookTestResponse,
 } from "./types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -378,6 +380,23 @@ export async function createSchemaContract(
   if (!res.ok) {
     const errData = await res.json().catch(() => ({ detail: "Failed to create schema contract" }));
     throw new Error(errData.detail || "Contract registration failed");
+  }
+
+  return await res.json();
+}
+
+export async function testWebhookDispatch(
+  payload: WebhookTestRequest
+): Promise<WebhookTestResponse> {
+  const res = await fetch(`${API_BASE}/api/v1/webhooks/test-dispatch`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({ detail: "Webhook test dispatch failed" }));
+    throw new Error(errData.detail || `Webhook test failed (${res.status})`);
   }
 
   return await res.json();
